@@ -214,7 +214,7 @@ matrix:
 install:
     # install lib_bash_wine - this installs also lib_bash
     - ${pip_command} install git+https://github.com/bitranox/lib_log_utils;
-    - ${pip_command} install git+https://github.com/bitranox/configmagick_wine;
+    - if [[ ${CMDPREFIX} == "wine" ]]; then ${pip_command} install git+https://github.com/bitranox/configmagick_wine; fi
 
     - $(command -v sudo 2>/dev/null) git clone https://github.com/bitranox/lib_bash_wine.git /usr/local/lib_bash_wine
     - $(command -v sudo 2>/dev/null) chmod -R 0755 /usr/local/lib_bash_wine

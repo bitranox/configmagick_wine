@@ -56,11 +56,12 @@ def add_wine_key(linux_release_name: str) -> None:
 
 def install_libfaudio0_if_needed() -> None:
     if int(configmagick_linux.get_linux_release_number_major()) > 18:
-        lib_log_utils.log_debug('install libfaudio0 backport')
-        install_libfaudio0_backport()
-    else:
-        lib_log_utils.log_debug('install libfaudio0')
-        configmagick_linux.install_linux_package('libfaudio0')
+        try:
+            lib_log_utils.log_debug('install libfaudio0')
+            configmagick_linux.install_linux_package('libfaudio0')
+        except Exception:
+            lib_log_utils.log_debug('install libfaudio0 backport')
+            install_libfaudio0_backport()
 
 
 def install_libfaudio0_backport() -> None:

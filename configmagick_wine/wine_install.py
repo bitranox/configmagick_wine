@@ -80,6 +80,6 @@ def install_wine_packages(wine_release: str) -> None:
         wine_version_number=get_wine_version_number(), linux_release_name=configmagick_linux.get_linux_release_name()))
 
 
-def get_wine_version_number() -> None:
+def get_wine_version_number() -> str:
     wine_version_number = configmagick_linux.run_shell_command('wine --version').stdout
     return wine_version_number

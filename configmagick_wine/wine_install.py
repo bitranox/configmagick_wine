@@ -6,9 +6,9 @@ import lib_log_utils
 def install_wine(wine_release: str, linux_release_name: str = configmagick_linux.get_linux_release_name()) -> None:
 
     lib_log_utils.banner_verbose('Installing WINE and WINETRICKS: \n'
-                                 'linux_release_name = {linux_release_name} \n'
-                                 'wine_release = {wine_release} \n'
-                                 .format(linux_release_name='x', wine_release=wine_release)
+                                 'linux_release_name = "{linux_release_name}" \n'
+                                 'wine_release = "{wine_release}" \n'
+                                 .format(linux_release_name=linux_release_name, wine_release=wine_release)
                                  )
     raise_if_wine_release_unknown(wine_release)
     add_architecture_386()
@@ -81,3 +81,4 @@ def install_wine_packages(wine_release: str) -> None:
 
 def get_wine_version_number() -> None:
     wine_version_number = configmagick_linux.run_shell_command('wine --version').stdout
+    return wine_version_number

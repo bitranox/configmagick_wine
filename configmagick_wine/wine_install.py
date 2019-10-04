@@ -41,7 +41,7 @@ def add_architecture_386() -> None:
 
 def add_wine_key(linux_release_name: str) -> None:
     """
-    >>> add_wine_key(configmagick_linux.get_linux_release_name())
+    >>> # add_wine_key(configmagick_linux.get_linux_release_name())
 
     """
     lib_log_utils.log_debug('add Wine Key and Repository, linux_release_name="linux_release_name"'

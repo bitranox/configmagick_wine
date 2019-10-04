@@ -26,11 +26,10 @@ import lib_log_utils
 
 # imports for local pytest
 try:
-    from .lib_wine import *         # type: ignore # pragma: no cover
-
+    from .wine_install import *         # type: ignore # pragma: no cover
 # imports for doctest
 except ImportError:                 # type: ignore # pragma: no cover
-    from lib_wine import *          # type: ignore # pragma: no cover
+    from wine_install import *          # type: ignore # pragma: no cover
 
 
 def main() -> None:

@@ -1,2 +1,2 @@
-from . import configmagick_linux   # pragma: no cover
-configmagick_linux.main()          # pragma: no cover
+from . import configmagick_wine   # pragma: no cover
+configmagick_wine.main()          # pragma: no cover

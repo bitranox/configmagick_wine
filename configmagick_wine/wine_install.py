@@ -1,9 +1,13 @@
+# ### STDLIB
+import subprocess
+
 # ### OWN
 import configmagick_linux
 import lib_log_utils
 
 
 def install_wine(wine_release: str, linux_release_name: str = configmagick_linux.get_linux_release_name()) -> None:
+    """ syntax: install_wine --wine_release=<stable|devel|staging> """
 
     lib_log_utils.banner_verbose('Installing WINE and WINETRICKS: \n'
                                  'linux_release_name = "{linux_release_name}" \n'
@@ -59,7 +63,7 @@ def install_libfaudio0_if_needed() -> None:
         try:
             lib_log_utils.log_debug('install libfaudio0')
             configmagick_linux.install_linux_package('libfaudio0')
-        except Exception:
+        except subprocess.CalledProcessError:
             lib_log_utils.log_debug('install libfaudio0 backport')
             install_libfaudio0_backport()
 
@@ -77,10 +81,13 @@ def install_wine_packages(wine_release: str, reinstall: bool = False) -> None:
     configmagick_linux.install_linux_package('winehq-{wine_release}'.format(wine_release=wine_release),
                                              parameters=['--install-recommends'], reinstall=reinstall)
     configmagick_linux.install_linux_packages(['cabextract', 'libxml2', 'libpng-dev'], reinstall=reinstall)
-    lib_log_utils.banner_success('Wine Version "{wine_version_number}" installed on linux "{linux_release_name}"'.format(
-        wine_version_number=get_wine_version_number(), linux_release_name=configmagick_linux.get_linux_release_name()))
+    lib_log_utils.banner_success('Wine Release "{wine_release}" Version "{wine_version_number}" installed on linux "{linux_release_name}"'
+                                 .format(wine_release=wine_release,
+                                         wine_version_number=get_wine_version_number(),
+                                         linux_release_name=configmagick_linux.get_linux_release_name())
+                                 )
 
 
 def get_wine_version_number() -> str:
     wine_version_number = configmagick_linux.run_shell_command('wine --version', quiet=True).stdout
-    return wine_version_number
+    return str(wine_version_number)

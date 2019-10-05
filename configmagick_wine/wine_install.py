@@ -73,9 +73,10 @@ def update_wine_packages() -> None:
     configmagick_linux.update()
 
 
-def install_wine_packages(wine_release: str) -> None:
-    configmagick_linux.run_shell_command('apt-get install --install-recommends winehq-{wine_release} -y'.format(wine_release=wine_release))
-    configmagick_linux.install_linux_packages(['cabextract', 'libxml2', 'libpng-dev'])
+def install_wine_packages(wine_release: str, reinstall: bool = False) -> None:
+    configmagick_linux.install_linux_package('winehq-{wine_release}'.format(wine_release=wine_release),
+                                             parameters=['--install-recommends'], reinstall=reinstall)
+    configmagick_linux.install_linux_packages(['cabextract', 'libxml2', 'libpng-dev'], reinstall=reinstall)
     lib_log_utils.banner_success('Wine Version "{wine_version_number}" installed on linux "{linux_release_name}"'.format(
         wine_version_number=get_wine_version_number(), linux_release_name=configmagick_linux.get_linux_release_name()))
 

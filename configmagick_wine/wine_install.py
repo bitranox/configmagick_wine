@@ -7,7 +7,7 @@ import lib_log_utils
 
 
 def install_wine(wine_release: str, linux_release_name: str = configmagick_linux.get_linux_release_name()) -> None:
-    """ syntax: install_wine --wine_release=<stable|devel|staging> """
+    """syntax: install_wine --wine_release=<stable|devel|staging>"""
 
     lib_log_utils.banner_verbose('Installing WINE and WINETRICKS: \n'
                                  'linux_release_name = "{linux_release_name}" \n'

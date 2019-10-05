@@ -7,7 +7,14 @@ import lib_log_utils
 
 
 def install_wine(wine_release: str, linux_release_name: str = configmagick_linux.get_linux_release_name()) -> None:
-    """syntax: install_wine --wine_release=<stable|devel|staging>"""
+    """
+    syntax: install_wine --wine_release=(stable|devel|staging)
+
+    --wine_release=stable: this is the current stable wine version (probably the one you should install)
+    --wine_release=devel: this package is used to provide development headers, mostly used by third party software compilation.
+    --wine_release=staging: this is the most recent testing wine version
+
+    """
 
     lib_log_utils.banner_verbose('Installing WINE and WINETRICKS: \n'
                                  'linux_release_name = "{linux_release_name}" \n'

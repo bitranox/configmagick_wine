@@ -15,7 +15,7 @@ required = ['fire',
             'lib_log_utils @ git+https://github.com/bitranox/lib_log_utils.git',
             ]                                                                                                   # type: List
 required_for_tests = list()                                                                                     # type: List
-entry_points = {'console_scripts': ['configmagick_wine = configmagick_wine.configmagick_wine:main']}            # type: Dict
+entry_points = {'console_scripts': ['configmagick_wine=configmagick_wine.configmagick_wine:main']}            # type: Dict
 
 
 def get_version(dist_directory: str) -> str:

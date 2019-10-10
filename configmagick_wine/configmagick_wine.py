@@ -12,6 +12,7 @@ import sys
 
 # noinspection PyBroadException
 try:
+    # noinspection PyPackageRequirements
     import fire                             # type: ignore
 except Exception:
     # maybe we dont need fire if not called via commandline, so accept if it is not there
@@ -24,12 +25,25 @@ import lib_log_utils
 
 # ####### PROJ
 
-# imports for local pytest
 try:
-    from .wine_install import *         # type: ignore # pragma: no cover
-# imports for doctest
-except ImportError:                 # type: ignore # pragma: no cover
-    from wine_install import *          # type: ignore # pragma: no cover
+    # imports for local pytest
+    from . import wine_install              # type: ignore # pragma: no cover
+    from . import wine_machine_install      # type: ignore # pragma: no cover
+    from . import wine_mono_install         # type: ignore # pragma: no cover
+    from . import wine_gecko_install        # type: ignore # pragma: no cover
+    from . import lib_wine                  # type: ignore # pragma: no cover
+except ImportError:                         # type: ignore # pragma: no cover
+    # imports for doctest
+    # noinspection PyUnresolvedReferences
+    import wine_install                     # type: ignore # pragma: no cover
+    # noinspection PyUnresolvedReferences
+    import wine_machine_install             # type: ignore # pragma: no cover
+    # noinspection PyUnresolvedReferences
+    import wine_mono_install                # type: ignore # pragma: no cover
+    # noinspection PyUnresolvedReferences
+    import wine_gecko_install               # type: ignore # pragma: no cover
+    # noinspection PyUnresolvedReferences
+    import lib_wine                         # type: ignore # pragma: no cover
 
 
 def main() -> None:
@@ -39,7 +53,11 @@ def main() -> None:
         is_called_via_pytest = [(sys_arg != '') for sys_arg in sys.argv if 'pytest' in sys_arg]
         if not is_called_via_pytest:
             fire.Fire({
-                'install_wine': install_wine,
+                'install_wine': wine_install.install_wine,
+                'install_wine_machine': wine_machine_install.install_wine_machine,
+                'install_wine_mono': wine_mono_install.install_wine_mono,
+                'install_wine_gecko': wine_gecko_install.install_wine_gecko,
+                'fix_wine_permissions': lib_wine.fix_wine_permissions,
             })
 
     except FileNotFoundError:

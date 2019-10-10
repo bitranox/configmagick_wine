@@ -2,6 +2,7 @@ import pathlib
 
 from .configmagick_wine import *
 from .wine_install import *
+from .wine_machine_install import *
 
 
 def get_version() -> str:

@@ -98,7 +98,7 @@ def create_wine_machine(wine_prefix: Union[str, pathlib.Path] = configmagick_lin
                                        wine_arch=wine_arch,
                                        windows_version=windows_version,))
     # we really set DISPLAY to an empty value, otherwise Errors under XVFB
-    configmagick_linux.run_shell_command('DISPLAY= WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" winecfg'
+    configmagick_linux.run_shell_command('DISPLAY="" WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" winecfg'
                                          .format(wine_prefix=wine_prefix, wine_arch=wine_arch))
 
 

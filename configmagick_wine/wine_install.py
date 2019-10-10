@@ -27,6 +27,7 @@ def install_wine(wine_release: str, linux_release_name: str = configmagick_linux
     install_libfaudio0_if_needed()
     update_wine_packages()
     install_wine_packages(wine_release)
+    install_winetricks()
 
 
 def raise_if_wine_release_unknown(wine_release: str) -> None:
@@ -46,7 +47,7 @@ def raise_if_wine_release_unknown(wine_release: str) -> None:
 
 
 def add_architecture_386() -> None:
-    lib_log_utils.log_debug('add 386 Architecture')
+    lib_log_utils.log_debug('Add 386 Architecture')
     configmagick_linux.run_shell_command('dpkg --add-architecture i386')
 
 
@@ -55,7 +56,7 @@ def add_wine_key(linux_release_name: str) -> None:
     >>> # add_wine_key(configmagick_linux.get_linux_release_name())
 
     """
-    lib_log_utils.log_debug('add Wine Key and Repository, linux_release_name="linux_release_name"'
+    lib_log_utils.log_debug('Add Wine Key and Repository, linux_release_name="linux_release_name"'
                             .format(linux_release_name=linux_release_name))
     configmagick_linux.run_shell_command('rm -f ./winehq.key*', shell=True)
     configmagick_linux.run_shell_command('wget -nv -c https://dl.winehq.org/wine-builds/winehq.key')
@@ -68,10 +69,10 @@ def add_wine_key(linux_release_name: str) -> None:
 def install_libfaudio0_if_needed() -> None:
     if int(configmagick_linux.get_linux_release_number_major()) > 18:
         try:
-            lib_log_utils.log_debug('install libfaudio0')
+            lib_log_utils.log_debug('Install libfaudio0')
             configmagick_linux.install_linux_package('libfaudio0')
         except subprocess.CalledProcessError:
-            lib_log_utils.log_debug('install libfaudio0 backport')
+            lib_log_utils.log_debug('Install libfaudio0 backport')
             install_libfaudio0_backport()
 
 
@@ -80,7 +81,7 @@ def install_libfaudio0_backport() -> None:
 
 
 def update_wine_packages() -> None:
-    lib_log_utils.log_debug('update wine packages')
+    lib_log_utils.log_debug('Update wine packages')
     configmagick_linux.update()
 
 
@@ -98,3 +99,16 @@ def install_wine_packages(wine_release: str, reinstall: bool = False) -> None:
 def get_wine_version_number() -> str:
     wine_version_number = configmagick_linux.run_shell_command('wine --version', quiet=True).stdout
     return str(wine_version_number)
+
+
+def install_winetricks() -> None:
+    lib_log_utils.log_debug('Install Winetricks')
+    configmagick_linux.run_shell_command('rm -f /usr/bin/winetricks')
+    configmagick_linux.run_shell_command(
+        'wget -nv -c --directory-prefix=/usr/bin/ https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks')
+    configmagick_linux.run_shell_command('chmod +x /usr/bin/winetricks')
+
+
+def update_winetricks() -> None:
+    lib_log_utils.log_debug('Update Winetricks')
+    configmagick_linux.run_shell_command('winetricks -q --self-update')

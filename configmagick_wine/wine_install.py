@@ -28,6 +28,7 @@ def install_wine(wine_release: str, linux_release_name: str = configmagick_linux
     update_wine_packages()
     install_wine_packages(wine_release)
     install_winetricks()
+    update_winetricks()
 
 
 def raise_if_wine_release_unknown(wine_release: str) -> None:

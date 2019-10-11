@@ -132,7 +132,7 @@ def get_mono_version_from_msi_filename(path_mono_msi_filename: Union[str, pathli
 
 
 def strings(filename, min=4):
-    with open(filename, errors="ignore") as f:  # Python 3.x
+    with open(filename, errors="ignore", encoding='utf-8') as f:  # Python 3.x
         result = ""
         for c in f.read():
             if c in string.printable:

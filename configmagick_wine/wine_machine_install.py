@@ -73,7 +73,6 @@ def install_wine_machine(wine_prefix: Union[str, pathlib.Path] = configmagick_li
     create_wine_machine(wine_prefix=wine_prefix, username=username, wine_arch=wine_arch, windows_version=windows_version)
     configmagick_linux.wait_for_file_to_be_created(filename=wine_prefix / 'system.reg')
     configmagick_linux.wait_for_file_to_be_unchanged(filename=wine_prefix / 'system.reg')
-    wait_for_system_registry_to_be_created(wine_prefix=wine_prefix)
     lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)    # it is cheap, just in case
 
     if install_mono:
@@ -82,7 +81,7 @@ def install_wine_machine(wine_prefix: Union[str, pathlib.Path] = configmagick_li
         wine_gecko_install.install_wine_gecko(wine_prefix=wine_prefix, username=username)
 
     disable_gui_crash_dialogs(wine_prefix=wine_prefix, username=username)
-    set_windows_version(wine_prefix=wine_prefix, username=username)
+    set_windows_version(wine_prefix=wine_prefix, username=username, windows_version=windows_version)
 
 
 def disable_gui_crash_dialogs(wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
@@ -96,9 +95,13 @@ def disable_gui_crash_dialogs(wine_prefix: Union[str, pathlib.Path] = configmagi
     lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)  # it is cheap, just in case
 
 
-def set_windows_version(wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
-                        username: str = configmagick_linux.get_current_username()) -> None:
-    pass
+def set_windows_version(wine_prefix: Union[str, pathlib.Path], username: str, windows_version: str) -> None:
+    lib_log_utils.banner_debug('Set Windows Version on "{wine_prefix}" to "{windows_version}"'
+                               .format(wine_prefix=wine_prefix, windows_version=windows_version))
+    wine_arch = lib_wine.get_wine_arch_from_wine_prefix(wine_prefix=wine_prefix, username=username)
+    configmagick_linux.run_shell_command('runuser -l {username} -c \'WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" winetricks -q "{windows_version}"\''
+                                         .format(username=username, wine_prefix=wine_prefix, wine_arch=wine_arch, windows_version=windows_version))
+    lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)  # it is cheap, just in case
 
 
 def create_wine_machine(wine_prefix: pathlib.Path,

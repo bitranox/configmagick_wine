@@ -167,9 +167,8 @@ def download_file_to_winecache(download_link: str, filename: pathlib.Path, usern
     """
     create_wine_cache_for_user(username=username)
     path_wine_cache = get_path_wine_cache_for_user(username=username)
-    configmagick_linux.run_shell_command('wget -nv -c -O "{path_wine_cache}/{filename}" "{download_link}"'
-                                         .format(path_wine_cache=path_wine_cache, filename=filename, download_link=download_link),
-                                         shell=True)
+    download_filename = path_wine_cache / filename
+    configmagick_linux.download_file(download_link=download_link, filename=download_filename)
     fix_permissions_winecache(username=username)
 
 

@@ -77,6 +77,7 @@ def get_path_mono_msi_filename(wine_prefix: pathlib.Path) -> pathlib.Path:
     PosixPath('wine-mono-4.9.3.msi')
 
     """
+    time.sleep(60)
     path_appwiz = wine_prefix / 'drive_c/windows/system32/appwiz.cpl'
     if not path_appwiz.is_file():
         raise RuntimeError('can not determine Mono MSI Filename, File "{path_appwiz}" does not exist'.format(path_appwiz=path_appwiz))

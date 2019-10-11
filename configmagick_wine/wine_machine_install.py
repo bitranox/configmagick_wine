@@ -126,7 +126,16 @@ def wait_for_system_registry_to_be_created(wine_prefix: pathlib.Path = configmag
         if time.time() - start_time > max_wait:
             raise RuntimeError('Timeout - system.reg was not created within {max_wait} seconds on winecfg.'
                                .format(max_wait=max_wait))
-    time.sleep(1)
+
+    old_mtime = system_registry.stat().st_mtime
+    current_mtime = old_mtime + 1
+    while old_mtime != current_mtime:
+        old_mtime = system_registry.stat().st_mtime
+        time.sleep(1)
+        current_mtime = system_registry.stat().st_mtime
+        if time.time() - start_time > max_wait:
+            raise RuntimeError('Timeout - system.reg was not created within {max_wait} seconds on winecfg.'
+                               .format(max_wait=max_wait))
 
 
 def delete_existing_wine_machine_or_raise(overwrite_existing_wine_machine: bool, wine_prefix: Union[str, pathlib.Path]) -> None:

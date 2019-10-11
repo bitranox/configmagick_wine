@@ -42,6 +42,7 @@ def install_wine_mono(wine_prefix: Union[str, pathlib.Path] = configmagick_linux
     # TODO: see https://travis-ci.community/t/travis-functions-no-such-file-or-directory/2286/10
 
     download_mono_msi_files(wine_prefix=wine_prefix, username=username, force_download=False)
+    """
     command = 'runuser -l {username} -c \'WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" wine msiexec /i "{wine_cache_directory}/{mono_msi_filename}"\''\
         .format(username=username,
                 wine_prefix=wine_prefix,
@@ -50,6 +51,15 @@ def install_wine_mono(wine_prefix: Union[str, pathlib.Path] = configmagick_linux
                 mono_msi_filename=mono_msi_filename)
 
     configmagick_linux.run_shell_command(command, shell=True)
+    """
+    command = 'WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" wine msiexec /i "{wine_cache_directory}/{mono_msi_filename}"'\
+        .format(username=username,
+                wine_prefix=wine_prefix,
+                wine_arch=wine_arch,
+                wine_cache_directory=wine_cache_directory,
+                mono_msi_filename=mono_msi_filename)
+
+    configmagick_linux.run_shell_command(command, shell=True, use_sudo=False)
 
     lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)  # it is cheap, just in case
 

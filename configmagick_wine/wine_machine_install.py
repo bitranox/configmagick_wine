@@ -71,6 +71,8 @@ def install_wine_machine(wine_prefix: Union[str, pathlib.Path] = configmagick_li
     lib_wine.raise_if_wine_prefix_does_not_match_user_homedir(wine_prefix=wine_prefix, username=username)
     delete_existing_wine_machine_or_raise(overwrite_existing_wine_machine, wine_prefix)
     create_wine_machine(wine_prefix=wine_prefix, username=username, wine_arch=wine_arch, windows_version=windows_version)
+    configmagick_linux.wait_for_file_to_be_created(filename=wine_prefix / 'system.reg')
+    configmagick_linux.wait_for_file_to_be_unchanged(filename=wine_prefix / 'system.reg')
     wait_for_system_registry_to_be_created(wine_prefix=wine_prefix)
     lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)    # it is cheap, just in case
 
@@ -113,30 +115,6 @@ def create_wine_machine(wine_prefix: pathlib.Path,
     # we really set DISPLAY to an empty value, otherwise Errors under XVFB
     configmagick_linux.run_shell_command('runuser -l {username} -c \'DISPLAY="" WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" winecfg\''
                                          .format(username=username, wine_prefix=wine_prefix, wine_arch=wine_arch), shell=True, quiet=True)
-
-
-def wait_for_system_registry_to_be_created(wine_prefix: pathlib.Path = configmagick_linux.get_path_home_dir_current_user() / '.wine',
-                                           max_wait: int = 60) -> None:
-    system_registry = wine_prefix / 'system.reg'
-    lib_log_utils.log_debug('wait for {system_registry} to be created'.format(system_registry=system_registry))
-    start_time = time.time()
-    while not system_registry.exists():
-        lib_log_utils.log_debug('wait for {system_registry} to be created'.format(system_registry=system_registry))
-        time.sleep(1)
-        if time.time() - start_time > max_wait:
-            raise RuntimeError('Timeout - system.reg was not created within {max_wait} seconds on winecfg.'
-                               .format(max_wait=max_wait))
-
-    old_mtime = system_registry.stat().st_mtime
-    current_mtime = old_mtime + 1
-    while old_mtime != current_mtime:
-        lib_log_utils.log_debug('wait until {system_registry} does not change anymore'.format(system_registry=system_registry))
-        old_mtime = system_registry.stat().st_mtime
-        time.sleep(1)
-        current_mtime = system_registry.stat().st_mtime
-        if time.time() - start_time > max_wait:
-            raise RuntimeError('Timeout - system.reg was not created within {max_wait} seconds on winecfg.'
-                               .format(max_wait=max_wait))
 
 
 def delete_existing_wine_machine_or_raise(overwrite_existing_wine_machine: bool, wine_prefix: Union[str, pathlib.Path]) -> None:

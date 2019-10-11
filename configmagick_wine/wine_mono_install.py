@@ -38,11 +38,14 @@ def install_wine_mono(wine_prefix: Union[str, pathlib.Path] = configmagick_linux
                                        mono_msi_filename=mono_msi_filename))
 
     download_mono_msi_files(wine_prefix=wine_prefix, username=username, force_download=False)
-    configmagick_linux.run_shell_command('WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" wine msiexec /i "{wine_cache_directory}/{mono_msi_filename}"'
-                                         .format(wine_prefix=wine_prefix,
-                                                 wine_arch=wine_arch,
-                                                 wine_cache_directory=wine_cache_directory,
-                                                 mono_msi_filename=mono_msi_filename))
+    command = 'runuser -l {username} -c \'WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" wine msiexec /i "{wine_cache_directory}/{mono_msi_filename}"\''\
+        .format(username=username,
+                wine_prefix=wine_prefix,
+                wine_arch=wine_arch,
+                wine_cache_directory=wine_cache_directory,
+                mono_msi_filename=mono_msi_filename)
+
+    configmagick_linux.run_shell_command(command)
     lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)  # it is cheap, just in case
 
 
@@ -122,17 +125,3 @@ def get_mono_version_from_msi_filename(path_mono_msi_filename: Union[str, pathli
     mono_version = mono_msi_filename.rsplit('-', 1)[1]
     mono_version = mono_version.rsplit('.', 1)[0]
     return mono_version
-
-
-def strings(filename, min=4):
-    with open(filename, errors="ignore") as f:  # Python 3.x
-        result = ""
-        for c in f.read():
-            if c in string.printable:
-                result += c
-                continue
-            if len(result) >= min:
-                yield result
-            result = ""
-        if len(result) >= min:  # catch result at EOF
-            yield result

@@ -1,5 +1,6 @@
 # ### STDLIB
 import pathlib
+import string
 import subprocess
 import time
 from typing import Union
@@ -80,9 +81,18 @@ def get_path_mono_msi_filename(wine_prefix: pathlib.Path) -> pathlib.Path:
     path_appwiz = wine_prefix / 'drive_c/windows/system32/appwiz.cpl'
     if not path_appwiz.is_file():
         raise RuntimeError('can not determine Mono MSI Filename, File "{path_appwiz}" does not exist'.format(path_appwiz=path_appwiz))
+    """
     response = configmagick_linux.run_shell_command('strings -d --bytes=12 "{path_appwiz}" | grep wine-mono | grep .msi'
                                                     .format(path_appwiz=path_appwiz), shell=True, quiet=True)
-    mono_msi_filename = response.stdout
+    """
+    part = ''
+    l_strings = strings(path_appwiz, 12)
+    for part in l_strings:
+        if 'wine-mono' in part:
+            break
+
+    # mono_msi_filename = response.stdout
+    mono_msi_filename = part
     if not mono_msi_filename:
         raise RuntimeError('can not determine Mono MSI Filename from WINEPREFIX="wine_prefix"'
                            .format(wine_prefix=wine_prefix))
@@ -119,3 +129,17 @@ def get_mono_version_from_msi_filename(path_mono_msi_filename: Union[str, pathli
     mono_version = mono_msi_filename.rsplit('-', 1)[1]
     mono_version = mono_version.rsplit('.', 1)[0]
     return mono_version
+
+
+def strings(filename, min=4):
+    with open(filename, errors="ignore") as f:  # Python 3.x
+        result = ""
+        for c in f.read():
+            if c in string.printable:
+                result += c
+                continue
+            if len(result) >= min:
+                yield result
+            result = ""
+        if len(result) >= min:  # catch result at EOF
+            yield result

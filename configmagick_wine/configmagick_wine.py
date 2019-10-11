@@ -54,6 +54,8 @@ def main() -> None:
         if not is_called_via_pytest:
             fire.Fire({
                 'install_wine': wine_install.install_wine,
+                'install_winetricks': wine_install.install_winetricks,
+                'update_winetricks': wine_install.update_winetricks,
                 'install_wine_machine': wine_machine_install.install_wine_machine,
                 'install_wine_mono': wine_mono_install.install_wine_mono,
                 'install_wine_gecko': wine_gecko_install.install_wine_gecko,

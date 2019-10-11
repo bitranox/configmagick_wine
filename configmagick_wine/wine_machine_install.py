@@ -40,6 +40,16 @@ def install_wine_machine(wine_prefix: Union[str, pathlib.Path] = configmagick_li
         --wine_prefix=/home/username/<prefix>   --> /home/username/<prefix>
         --overwrite_existing_wine_machine
 
+    >>> install_wine_machine(wine_prefix='wine_test_32', \
+        wine_arch='win32', overwrite_existing_wine_machine=True, install_mono=False, install_gecko=False)   # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+    Using winetricks ...
+    >>> install_wine_machine(wine_prefix='wine_test_32', \
+        wine_arch='win32', overwrite_existing_wine_machine=False, install_mono=False, install_gecko=False)   # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+    Traceback (most recent call last):
+        ...
+    RuntimeError: the WINEPREFIX does already exist, and overwrite is disabled: ...
+
+
     """
     wine_prefix = lib_wine.get_and_check_wine_prefix(wine_prefix, username)    # prepend /home/user if needed
     wine_arch = lib_wine.get_wine_arch(wine_arch=wine_arch)
@@ -60,7 +70,7 @@ def install_wine_machine(wine_prefix: Union[str, pathlib.Path] = configmagick_li
 
     lib_wine.raise_if_wine_prefix_does_not_match_user_homedir(wine_prefix=wine_prefix, username=username)
     delete_existing_wine_machine_or_raise(overwrite_existing_wine_machine, wine_prefix)
-    create_wine_machine(wine_prefix=wine_prefix, wine_arch=wine_arch, windows_version=windows_version)
+    create_wine_machine(wine_prefix=wine_prefix, username=username, wine_arch=wine_arch, windows_version=windows_version)
     wait_for_system_registry_to_be_created(wine_prefix=wine_prefix)
     lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)    # it is cheap, just in case
 
@@ -74,22 +84,23 @@ def install_wine_machine(wine_prefix: Union[str, pathlib.Path] = configmagick_li
 
 
 def disable_gui_crash_dialogs(wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
-                              username: str = configmagick_linux.get_current_username()):
+                              username: str = configmagick_linux.get_current_username()) -> None:
     wine_prefix = lib_wine.get_and_check_wine_prefix(wine_prefix, username)    # prepend /home/user if needed
     wine_arch = lib_wine.get_wine_arch_from_wine_prefix(wine_prefix=wine_prefix, username=username)
     lib_log_utils.banner_debug('Disable GUI Crash Dialogs on WINEPREFIX="{wine_prefix}", WINEARCH="{wine_arch}"'
                                .format(wine_prefix=wine_prefix, wine_arch=wine_arch))
-    configmagick_linux.run_shell_command('WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" winetricks nocrashdialog'
-                                         .format(wine_prefix=wine_prefix, wine_arch=wine_arch))
+    configmagick_linux.run_shell_command('runuser -l {username} -c \'WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" winetricks nocrashdialog\''
+                                         .format(username=username, wine_prefix=wine_prefix, wine_arch=wine_arch))
     lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)  # it is cheap, just in case
 
 
 def set_windows_version(wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
-                        username: str = configmagick_linux.get_current_username()):
+                        username: str = configmagick_linux.get_current_username()) -> None:
     pass
 
 
-def create_wine_machine(wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
+def create_wine_machine(wine_prefix: pathlib.Path,
+                        username: str,
                         wine_arch: str = 'win32',
                         windows_version: str = 'win7') -> None:
 
@@ -97,9 +108,11 @@ def create_wine_machine(wine_prefix: Union[str, pathlib.Path] = configmagick_lin
                                .format(wine_prefix=wine_prefix,
                                        wine_arch=wine_arch,
                                        windows_version=windows_version,))
+    configmagick_linux.run_shell_command('mkdir -p {wine_prefix}'.format(wine_prefix=wine_prefix))
+    lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)
     # we really set DISPLAY to an empty value, otherwise Errors under XVFB
-    configmagick_linux.run_shell_command('DISPLAY="" WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" winecfg'
-                                         .format(wine_prefix=wine_prefix, wine_arch=wine_arch))
+    configmagick_linux.run_shell_command('runuser -l {username} -c \'DISPLAY="" WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" winecfg\''
+                                         .format(username=username, wine_prefix=wine_prefix, wine_arch=wine_arch), shell=True, quiet=True)
 
 
 def wait_for_system_registry_to_be_created(wine_prefix: pathlib.Path = configmagick_linux.get_path_home_dir_current_user() / '.wine',
@@ -116,7 +129,7 @@ def wait_for_system_registry_to_be_created(wine_prefix: pathlib.Path = configmag
     time.sleep(1)
 
 
-def delete_existing_wine_machine_or_raise(overwrite_existing_wine_machine: bool, wine_prefix: Union[str, pathlib.Path]):
+def delete_existing_wine_machine_or_raise(overwrite_existing_wine_machine: bool, wine_prefix: Union[str, pathlib.Path]) -> None:
     wine_prefix = pathlib.Path(wine_prefix)                 # if wine_prefix is passed as string
     lib_wine.raise_if_path_outside_homedir(wine_prefix)
     if wine_prefix.exists():

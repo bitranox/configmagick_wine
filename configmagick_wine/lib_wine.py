@@ -74,7 +74,7 @@ def get_windows_version(windows_version: str = 'win7') -> str:
 def get_path_wine_cache_for_user(username: str) -> pathlib.Path:
     path_user_home = configmagick_linux.get_path_home_dir_user(username=username)
     path_wine_cache = path_user_home / '.cache/wine'
-    return path_wine_cache
+    return pathlib.Path(path_wine_cache)
 
 
 def create_wine_cache_for_user(username: str) -> None:
@@ -107,7 +107,7 @@ def get_wine_arch_from_wine_prefix(wine_prefix: Union[str, pathlib.Path], userna
     if wine_arch not in l_valid_wine_archs:
         raise RuntimeError('invalid wine_arch detected in system_registry="{path_wine_system_registry}": "{wine_arch}"'
                            .format(path_wine_system_registry=path_wine_system_registry, wine_arch=wine_arch))
-    return wine_arch
+    return str(wine_arch)
 
 
 def get_path_wine_system_registry(wine_prefix: pathlib.Path) -> pathlib.Path:
@@ -146,7 +146,7 @@ def raise_if_wine_prefix_does_not_match_user_homedir(wine_prefix: Union[str, pat
             wine_prefix=wine_prefix, username=username))
 
 
-def is_file_in_wine_cache(username: str, filename: pathlib.Path):
+def is_file_in_wine_cache(username: str, filename: pathlib.Path) -> bool:
     path_wine_cache = get_path_wine_cache_for_user(username=username)
     path_file = path_wine_cache / filename
     if path_file.is_file():

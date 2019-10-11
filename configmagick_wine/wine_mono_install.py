@@ -76,7 +76,6 @@ def download_mono_msi_files(wine_prefix: Union[str, pathlib.Path], username: str
 
 def get_path_mono_msi_filename(wine_prefix: pathlib.Path) -> pathlib.Path:
     """
-    >>> ### TODO - TESTS
     >>> get_path_mono_msi_filename(pathlib.Path('/home/consul/.wine'))
     PosixPath('wine-mono-4.9.3.msi')
 
@@ -85,6 +84,7 @@ def get_path_mono_msi_filename(wine_prefix: pathlib.Path) -> pathlib.Path:
     if not path_appwiz.is_file():
         raise RuntimeError('can not determine Mono MSI Filename, File "{path_appwiz}" does not exist'.format(path_appwiz=path_appwiz))
 
+    # this fails from unknown reason on travis xenial !
     response = configmagick_linux.run_shell_command('strings -d --bytes=12 --encoding=s "{path_appwiz}" | grep wine-mono | grep .msi'
                                                     .format(path_appwiz=path_appwiz), shell=True, quiet=True)
     mono_msi_filename = response.stdout

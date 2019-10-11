@@ -130,6 +130,7 @@ def wait_for_system_registry_to_be_created(wine_prefix: pathlib.Path = configmag
     old_mtime = system_registry.stat().st_mtime
     current_mtime = old_mtime + 1
     while old_mtime != current_mtime:
+        lib_log_utils.log_debug('wait until {system_registry} does not change anymore'.format(system_registry=system_registry))
         old_mtime = system_registry.stat().st_mtime
         time.sleep(1)
         current_mtime = system_registry.stat().st_mtime

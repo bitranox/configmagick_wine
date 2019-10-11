@@ -78,11 +78,13 @@ def get_path_mono_msi_filename(wine_prefix: pathlib.Path) -> pathlib.Path:
 
     """
     path_appwiz = wine_prefix / 'drive_c/windows/system32/appwiz.cpl'
+    if not path_appwiz.is_file():
+        raise RuntimeError('can not determine Mono MSI Filename, File "{path_appwiz}" does not exist'.format(path_appwiz=path_appwiz))
     response = configmagick_linux.run_shell_command('strings -n 12 "{path_appwiz}" | grep wine-mono | grep .msi'
                                                     .format(path_appwiz=path_appwiz), shell=True, quiet=True)
     mono_msi_filename = response.stdout
     if not mono_msi_filename:
-        raise RuntimeError('can not determine Mono MSI File name from WINEPREFIX="wine_prefix"'
+        raise RuntimeError('can not determine Mono MSI Filename from WINEPREFIX="wine_prefix"'
                            .format(wine_prefix=wine_prefix))
     path_mono_msi = pathlib.Path(mono_msi_filename)
     return path_mono_msi

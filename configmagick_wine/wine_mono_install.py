@@ -50,9 +50,10 @@ def install_wine_mono(wine_prefix: Union[str, pathlib.Path] = configmagick_linux
                 wine_cache_directory=wine_cache_directory,
                 mono_msi_filename=mono_msi_filename)
 
-    response = configmagick_linux.run_shell_command(command,except_on_fail=False)
+    response = configmagick_linux.run_shell_command(command, except_on_fail=False)
     lib_log_utils.log_critical(response.stdout)
     lib_log_utils.log_critical(response.stderr)
+    lib_log_utils.log_critical(response.returncode)
 
     lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)  # it is cheap, just in case
 

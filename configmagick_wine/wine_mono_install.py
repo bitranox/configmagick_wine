@@ -51,6 +51,7 @@ def install_wine_mono(wine_prefix: Union[str, pathlib.Path] = configmagick_linux
                 mono_msi_filename=mono_msi_filename)
     """
 
+
     command = 'runuser -l {username} -c \'WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" wine start "{wine_cache_directory}/{mono_msi_filename}"\''\
         .format(username=username,
                 wine_prefix=wine_prefix,

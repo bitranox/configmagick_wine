@@ -120,7 +120,7 @@ def create_wine_machine(wine_prefix: pathlib.Path,
     lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)
     # we really set DISPLAY to an empty value, otherwise Errors under XVFB
     configmagick_linux.run_shell_command('runuser -l {username} -c \'DISPLAY="" WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" winecfg\''
-                                         .format(username=username, wine_prefix=wine_prefix, wine_arch=wine_arch), shell=True, quiet=True)
+                                         .format(username=username, wine_prefix=wine_prefix, wine_arch=wine_arch), shell=True)
 
 
 def delete_existing_wine_machine_or_raise(overwrite_existing_wine_machine: bool, wine_prefix: Union[str, pathlib.Path]) -> None:

@@ -3,6 +3,10 @@ group: travis_latest
 dist: xenial
 sudo: true
 
+before_script:
+  - echo "export TRAVIS_HOME=$TRAVIS_HOME" | cat - ~/.bashrc > ~/.bashrc.mod
+  - mv -v ~/.bashrc.mod ~/.bashrc
+
 env:
     global:
         - github_master="git+https://github.com/${TRAVIS_REPO_SLUG}.git"

@@ -43,6 +43,7 @@ def install_wine_mono(wine_prefix: Union[str, pathlib.Path] = configmagick_linux
 
     download_mono_msi_files(wine_prefix=wine_prefix, username=username, force_download=False)
 
+    """
     command = 'runuser -l {username} -c \'WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" wine msiexec /i "{wine_cache_directory}/{mono_msi_filename}"\''\
         .format(username=username,
                 wine_prefix=wine_prefix,
@@ -50,7 +51,15 @@ def install_wine_mono(wine_prefix: Union[str, pathlib.Path] = configmagick_linux
                 wine_cache_directory=wine_cache_directory,
                 mono_msi_filename=mono_msi_filename)
 
-    response = configmagick_linux.run_shell_command(command, except_on_fail=False)
+    """
+    command = 'WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" wine msiexec /i "{wine_cache_directory}/{mono_msi_filename}"'\
+        .format(username=username,
+                wine_prefix=wine_prefix,
+                wine_arch=wine_arch,
+                wine_cache_directory=wine_cache_directory,
+                mono_msi_filename=mono_msi_filename)
+
+    response = configmagick_linux.run_shell_command(command, except_on_fail=False, use_sudo=False)
     lib_log_utils.log_critical(response.stdout)
     lib_log_utils.log_critical(response.stderr)
     lib_log_utils.log_critical(response.returncode)

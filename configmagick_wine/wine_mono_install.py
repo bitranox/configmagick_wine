@@ -39,7 +39,7 @@ def install_wine_mono(wine_prefix: Union[str, pathlib.Path] = configmagick_linux
                                        wine_cache_directory=wine_cache_directory,
                                        mono_msi_filename=mono_msi_filename))
 
-    # TODO: see https://travis-ci.community/t/travis-functions-no-such-file-or-directory/2286/10
+    #  TODO: see https://travis-ci.community/t/travis-functions-no-such-file-or-directory/2286/10
 
     download_mono_msi_files(wine_prefix=wine_prefix, username=username, force_download=False)
 

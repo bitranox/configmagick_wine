@@ -24,24 +24,32 @@ def install_wine_mono(wine_prefix: Union[str, pathlib.Path] = configmagick_linux
     """
     install the latest mono version from github
     """
+    if configmagick_linux.is_on_travis():
+        lib_log_utils.banner_warning('Mono Installation does not work on Travis at the moment')
+        return
+
     wine_prefix = lib_wine.get_and_check_wine_prefix(wine_prefix, username)
     wine_arch = lib_wine.get_wine_arch_from_wine_prefix(wine_prefix=wine_prefix, username=username)
     mono_download_link = get_wine_mono_download_link_from_github()
     mono_msi_filename = pathlib.Path(mono_download_link.rsplit('/', 1)[1])
     wine_cache_directory = lib_wine.get_path_wine_cache_for_user(username=username)
-    lib_log_utils.banner_debug('Installing Wine Mono :\n'
-                               'WINEPREFIX="{wine_prefix}"\n'
-                               'WINEARCH="{wine_arch}"\n'
-                               'mono_msi_filename="{mono_msi_filename}"\n'
-                               'wine_cache_directory="{wine_cache_directory}"'
-                               .format(wine_prefix=wine_prefix,
-                                       wine_arch=wine_arch,
-                                       wine_cache_directory=wine_cache_directory,
-                                       mono_msi_filename=mono_msi_filename))
+    lib_log_utils.banner_verbose('Installing Wine Mono :\n'
+                                 'WINEPREFIX="{wine_prefix}"\n'
+                                 'WINEARCH="{wine_arch}"\n'
+                                 'mono_msi_filename="{mono_msi_filename}"\n'
+                                 'wine_cache_directory="{wine_cache_directory}"'
+                                 .format(wine_prefix=wine_prefix,
+                                         wine_arch=wine_arch,
+                                         wine_cache_directory=wine_cache_directory,
+                                         mono_msi_filename=mono_msi_filename))
 
     # TODO: see https://travis-ci.community/t/travis-functions-no-such-file-or-directory/2286/10
 
-    download_mono_msi_files(wine_prefix=wine_prefix, username=username, force_download=False)
+    download_mono_msi_files(username=username, force_download=False)
+
+    lib_log_utils.log_verbose('Install "{mono_msi_filename}" on WINEPREFIX="{wine_prefix}"')\
+        .format(mono_msi_filename=mono_msi_filename,
+                wine_prefix=wine_prefix)
 
     command = 'runuser -l {username} -c \'WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" wine msiexec /i "{wine_cache_directory}/{mono_msi_filename}"\''\
         .format(username=username,
@@ -49,7 +57,6 @@ def install_wine_mono(wine_prefix: Union[str, pathlib.Path] = configmagick_linux
                 wine_arch=wine_arch,
                 wine_cache_directory=wine_cache_directory,
                 mono_msi_filename=mono_msi_filename)
-
     configmagick_linux.run_shell_command(command, shell=True)
     lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)  # it is cheap, just in case
 
@@ -58,6 +65,7 @@ def install_wine_mono_appwiz(wine_prefix: Union[str, pathlib.Path] = configmagic
                              username: str = configmagick_linux.get_current_username()) -> None:
     """
     install the mono version stated in appwiz.cpl - that does not work on travis, maybe some encoding issues
+    we prefer to install the latest wine-mono from github
     """
     wine_prefix = lib_wine.get_and_check_wine_prefix(wine_prefix, username)
     wine_arch = lib_wine.get_wine_arch_from_wine_prefix(wine_prefix=wine_prefix, username=username)
@@ -73,7 +81,7 @@ def install_wine_mono_appwiz(wine_prefix: Union[str, pathlib.Path] = configmagic
                                        wine_cache_directory=wine_cache_directory,
                                        mono_msi_filename=mono_msi_filename))
 
-    download_mono_msi_files(wine_prefix=wine_prefix, username=username, force_download=False)
+    download_mono_msi_files(username=username, force_download=False)
     command = 'runuser -l {username} -c \'WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" wine msiexec /i "{wine_cache_directory}/{mono_msi_filename}"\''\
         .format(username=username,
                 wine_prefix=wine_prefix,
@@ -85,20 +93,17 @@ def install_wine_mono_appwiz(wine_prefix: Union[str, pathlib.Path] = configmagic
     lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)  # it is cheap, just in case
 
 
-def download_mono_msi_files(wine_prefix: Union[str, pathlib.Path], username: str, force_download: bool = False) -> None:
+def download_mono_msi_files(username: str, force_download: bool = False) -> None:
     """
-    download the latest mono version from github
-    >>> # TODO: TESTS VERALLGEMEINERN
-    >>> wine_prefix = '/home/consul/.wine'
-    >>> username = 'consul'
+    >>> username = configmagick_linux.get_current_username()
     >>> force_download = True
-    >>> download_mono_msi_files(wine_prefix=wine_prefix, username=username, force_download=force_download)
+    >>> download_mono_msi_files(username=username, force_download=force_download)
     >>> force_download = False
-    >>> download_mono_msi_files(wine_prefix=wine_prefix, username=username, force_download=force_download)
+    >>> download_mono_msi_files(username=username, force_download=force_download)
 
     """
 
-    wine_prefix = lib_wine.get_and_check_wine_prefix(wine_prefix, username)
+    lib_log_utils.log_verbose('Download Mono MSI Files to Wine Cache')
     mono_download_link = get_wine_mono_download_link_from_github()
     mono_msi_filename = pathlib.Path(mono_download_link.rsplit('/', 1)[1])
 
@@ -109,18 +114,6 @@ def download_mono_msi_files(wine_prefix: Union[str, pathlib.Path], username: str
 
 
 def download_mono_msi_files_appwiz(wine_prefix: Union[str, pathlib.Path], username: str, force_download: bool = False) -> None:
-    """
-    download the mono version stated in appwiz.cpl - that does not work on travis, maybe some encoding issues
-    >>> # TODO: TESTS VERALLGEMEINERN
-    >>> wine_prefix = '/home/consul/.wine'
-    >>> username = 'consul'
-    >>> force_download = True
-    >>> download_mono_msi_files(wine_prefix=wine_prefix, username=username, force_download=force_download)
-    >>> force_download = False
-    >>> download_mono_msi_files(wine_prefix=wine_prefix, username=username, force_download=force_download)
-
-    """
-
     wine_prefix = lib_wine.get_and_check_wine_prefix(wine_prefix, username)
     mono_msi_filename = get_mono_msi_filename_from_appwiz(wine_prefix=wine_prefix)
     if not lib_wine.is_file_in_wine_cache(username=username, filename=mono_msi_filename) or force_download:
@@ -135,11 +128,6 @@ def download_mono_msi_files_appwiz(wine_prefix: Union[str, pathlib.Path], userna
 
 
 def get_mono_msi_filename_from_appwiz(wine_prefix: pathlib.Path) -> pathlib.Path:
-    """
-    >>> get_mono_msi_filename_from_appwiz(pathlib.Path('/home/consul/.wine'))
-    PosixPath('wine-mono-4.9.3.msi')
-
-    """
     path_appwiz = wine_prefix / 'drive_c/windows/system32/appwiz.cpl'
     if not path_appwiz.is_file():
         raise RuntimeError('can not determine Mono MSI Filename, File "{path_appwiz}" does not exist'.format(path_appwiz=path_appwiz))

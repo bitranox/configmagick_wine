@@ -84,6 +84,9 @@ matrix:
           - wine_windows_version="winxp"
           - wine_release="stable"
           - wine_python_version="python3"
+      before_install:
+          - echo "export TRAVIS_HOME=$TRAVIS_HOME" | cat - ~/.bashrc > ~/.bashrc.mod
+          - mv -v ~/.bashrc.mod ~/.bashrc
 
     - os: linux
       language: python
@@ -212,8 +215,6 @@ matrix:
 
 
 install:
-    - echo "export TRAVIS_HOME=$TRAVIS_HOME" | cat - ~/.bashrc > ~/.bashrc.mod
-    - mv -v ~/.bashrc.mod ~/.bashrc
     # install lib_bash_wine - this installs also lib_bash
     - ${pip_command} install git+https://github.com/bitranox/lib_log_utils;
     - if [[ ${CMDPREFIX} == "wine" ]]; then ${pip_command} install git+https://github.com/bitranox/configmagick_wine; fi

@@ -75,6 +75,8 @@ def install_wine_machine(wine_prefix: Union[str, pathlib.Path] = configmagick_li
     configmagick_linux.wait_for_file_to_be_unchanged(filename=wine_prefix / 'system.reg')
     lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)    # it is cheap, just in case
 
+    disable_gui_crash_dialogs(wine_prefix=wine_prefix, username=username)
+
     if install_mono:
         lib_log_utils.log_verbose('Waiting 60 Seconds')
         time.sleep(60)
@@ -82,7 +84,6 @@ def install_wine_machine(wine_prefix: Union[str, pathlib.Path] = configmagick_li
     if install_gecko:
         wine_gecko_install.install_wine_gecko(wine_prefix=wine_prefix, username=username)
 
-    disable_gui_crash_dialogs(wine_prefix=wine_prefix, username=username)
     set_windows_version(wine_prefix=wine_prefix, username=username, windows_version=windows_version)
 
 

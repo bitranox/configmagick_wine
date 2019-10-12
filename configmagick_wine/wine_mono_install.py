@@ -49,7 +49,7 @@ def install_wine_mono(wine_prefix: Union[str, pathlib.Path] = configmagick_linux
                 wine_cache_directory=wine_cache_directory,
                 mono_msi_filename=mono_msi_filename)
 
-    configmagick_linux.run_shell_command(command, shell=True)
+    configmagick_linux.run_shell_command(command)
 
     lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)  # it is cheap, just in case
 

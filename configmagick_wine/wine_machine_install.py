@@ -76,6 +76,8 @@ def install_wine_machine(wine_prefix: Union[str, pathlib.Path] = configmagick_li
     lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)    # it is cheap, just in case
 
     if install_mono:
+        lib_log_utils.log_verbose('Waiting 60 Seconds')
+        time.sleep(60)
         wine_mono_install.install_wine_mono(wine_prefix=wine_prefix, username=username)
     if install_gecko:
         wine_gecko_install.install_wine_gecko(wine_prefix=wine_prefix, username=username)

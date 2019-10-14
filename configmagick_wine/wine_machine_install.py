@@ -43,10 +43,14 @@ def install_wine_machine(wine_prefix: Union[str, pathlib.Path] = configmagick_li
         --wine_prefix=/home/username/<prefix>   --> /home/username/<prefix>
         --overwrite_existing_wine_machine
 
-    >>> wine_install.install_wine(wine_release='staging')
+    >>> wine_install.install_wine(wine_release='staging')   # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+    OK
+    ...
+
     >>> install_wine_machine(wine_prefix='wine_test_32', \
         wine_arch='win32', overwrite_existing_wine_machine=True, install_mono=False, install_gecko=False)   # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
     Using winetricks ...
+
     >>> install_wine_machine(wine_prefix='wine_test_32', \
         wine_arch='win32', overwrite_existing_wine_machine=False, install_mono=False, install_gecko=False)   # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
     Traceback (most recent call last):

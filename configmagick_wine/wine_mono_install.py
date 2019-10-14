@@ -180,7 +180,7 @@ def get_wine_mono_download_link_from_github() -> str:
     link = link.split('href="', 1)[1]
     link = 'https://github.com/' + link.split('"', 1)[0]
     configmagick_linux.run_shell_command('rm -f "{filename}"'.format(filename=filename), shell=True, quiet=True)
-    return link
+    return str(link)
 
 
 def get_mono_version_from_msi_filename(path_mono_msi_filename: Union[str, pathlib.Path]) -> str:

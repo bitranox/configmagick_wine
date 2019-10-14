@@ -12,11 +12,17 @@ import lib_log_utils
 
 try:
     # imports for local pytest
-    from . import lib_wine             # type: ignore # pragma: no cover
-except ImportError:                    # type: ignore # pragma: no cover
+    from . import lib_wine              # type: ignore # pragma: no cover
+    from . import wine_install          # type: ignore # pragma: no cover
+    from . import wine_machine_install  # type: ignore # pragma: no cover
+except ImportError:                     # type: ignore # pragma: no cover
     # imports for doctest
     # noinspection PyUnresolvedReferences
-    import lib_wine                    # type: ignore # pragma: no cover
+    import lib_wine                     # type: ignore # pragma: no cover
+    # noinspection PyUnresolvedReferences
+    import wine_install                 # type: ignore # pragma: no cover
+    # noinspection PyUnresolvedReferences
+    import wine_machine_install                 # type: ignore # pragma: no cover
 
 
 def install_wine_mono(wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
@@ -69,7 +75,7 @@ def install_wine_mono_appwiz(wine_prefix: Union[str, pathlib.Path] = configmagic
     """
     wine_prefix = lib_wine.get_and_check_wine_prefix(wine_prefix, username)
     wine_arch = lib_wine.get_wine_arch_from_wine_prefix(wine_prefix=wine_prefix, username=username)
-    mono_msi_filename = get_mono_msi_filename_from_appwiz(wine_prefix=wine_prefix)
+    mono_msi_filename = get_mono_msi_filename_from_appwiz(wine_prefix=wine_prefix, username=username)
     wine_cache_directory = lib_wine.get_path_wine_cache_for_user(username=username)
     lib_log_utils.banner_debug('Installing Wine Mono :\n'
                                'WINEPREFIX="{wine_prefix}"\n'
@@ -115,7 +121,7 @@ def download_mono_msi_files(username: str, force_download: bool = False) -> None
 
 def download_mono_msi_files_appwiz(wine_prefix: Union[str, pathlib.Path], username: str, force_download: bool = False) -> None:
     wine_prefix = lib_wine.get_and_check_wine_prefix(wine_prefix, username)
-    mono_msi_filename = get_mono_msi_filename_from_appwiz(wine_prefix=wine_prefix)
+    mono_msi_filename = get_mono_msi_filename_from_appwiz(wine_prefix=wine_prefix, username=username)
     if not lib_wine.is_file_in_wine_cache(username=username, filename=mono_msi_filename) or force_download:
         if force_download:
             lib_wine.remove_file_from_winecache(filename=mono_msi_filename, username=username)
@@ -127,8 +133,38 @@ def download_mono_msi_files_appwiz(wine_prefix: Union[str, pathlib.Path], userna
             lib_wine.download_file_to_winecache(download_link=mono_download_link_backup, filename=mono_msi_filename, username=username)
 
 
-def get_mono_msi_filename_from_appwiz(wine_prefix: pathlib.Path) -> pathlib.Path:
-    path_appwiz = wine_prefix / 'drive_c/windows/system32/appwiz.cpl'
+def get_mono_msi_filename_from_appwiz(wine_prefix: pathlib.Path, username: str) -> pathlib.Path:
+    """
+    >>> wine_install.install_wine(wine_release='staging')  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+    OK
+    ...
+    >>> wine_machine_install.install_wine_machine(wine_prefix='wine_test_32',wine_arch='win32',\
+                                                  overwrite_existing_wine_machine=True)  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+    Using winetricks ...
+
+    >>> wine_machine_install.install_wine_machine(wine_prefix='wine_test_64',wine_arch='win64',\
+                                                  overwrite_existing_wine_machine=True)  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+    ---...
+    You are using a 64-bit WINEPREFIX. ...
+
+
+    >>> username = configmagick_linux.get_current_username()
+    >>> wine_prefix = lib_wine.get_and_check_wine_prefix('wine_test_32', username=username)
+    >>> path_mono_msi_filename = get_mono_msi_filename_from_appwiz(wine_prefix, username)
+    >>> assert str(path_mono_msi_filename).startswith('wine-mono-') and str(path_mono_msi_filename).endswith('.msi')
+    >>> wine_prefix = lib_wine.get_and_check_wine_prefix('wine_test_64', username=username)
+    >>> path_mono_msi_filename = get_mono_msi_filename_from_appwiz(wine_prefix, username)
+    >>> assert str(path_mono_msi_filename).startswith('wine-mono-') and str(path_mono_msi_filename).endswith('.msi')
+
+
+    """
+
+    wine_arch = lib_wine.get_wine_arch_from_wine_prefix(wine_prefix=wine_prefix, username=username)
+    if wine_arch == 'win32':
+        path_appwiz = wine_prefix / 'drive_c/windows/system32/appwiz.cpl'
+    else:
+        path_appwiz = wine_prefix / 'drive_c/windows/syswow64/appwiz.cpl'
+
     if not path_appwiz.is_file():
         raise RuntimeError('can not determine Mono MSI Filename, File "{path_appwiz}" does not exist'.format(path_appwiz=path_appwiz))
 

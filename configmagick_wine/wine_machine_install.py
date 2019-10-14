@@ -13,16 +13,19 @@ import lib_log_utils
 try:
     # imports for local pytest
     from . import lib_wine             # type: ignore # pragma: no cover
-    from . import wine_mono_install    # type: ignore # pragma: no cover
     from . import wine_gecko_install   # type: ignore # pragma: no cover
+    from . import wine_install         # type: ignore # pragma: no cover
+    from . import wine_mono_install    # type: ignore # pragma: no cover
 except ImportError:                    # type: ignore # pragma: no cover
     # imports for doctest
     # noinspection PyUnresolvedReferences
     import lib_wine                    # type: ignore # pragma: no cover
     # noinspection PyUnresolvedReferences
-    import wine_mono_install           # type: ignore # pragma: no cover
-    # noinspection PyUnresolvedReferences
     import wine_gecko_install          # type: ignore # pragma: no cover
+    # noinspection PyUnresolvedReferences
+    import wine_install                # type: ignore # pragma: no cover
+    # noinspection PyUnresolvedReferences
+    import wine_mono_install           # type: ignore # pragma: no cover
 
 
 def install_wine_machine(wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
@@ -40,6 +43,7 @@ def install_wine_machine(wine_prefix: Union[str, pathlib.Path] = configmagick_li
         --wine_prefix=/home/username/<prefix>   --> /home/username/<prefix>
         --overwrite_existing_wine_machine
 
+    >>> wine_install.install_wine(wine_release='staging')
     >>> install_wine_machine(wine_prefix='wine_test_32', \
         wine_arch='win32', overwrite_existing_wine_machine=True, install_mono=False, install_gecko=False)   # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
     Using winetricks ...

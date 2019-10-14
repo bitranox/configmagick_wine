@@ -29,6 +29,28 @@ def install_wine_mono(wine_prefix: Union[str, pathlib.Path] = configmagick_linux
                       username: str = configmagick_linux.get_current_username()) -> None:
     """
     install the latest mono version from github
+
+    >>> wine_install.install_wine(wine_release='staging')  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+    OK
+    ...
+    >>> wine_machine_install.install_wine_machine(wine_prefix='wine_test_32',wine_arch='win32',\
+                                                  overwrite_existing_wine_machine=True)  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+    Using winetricks ...
+
+    >>> wine_machine_install.install_wine_machine(wine_prefix='wine_test_64',wine_arch='win64',\
+                                                  overwrite_existing_wine_machine=True)  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+    ---...
+    You are using a 64-bit WINEPREFIX. ...
+
+
+    >>> username = configmagick_linux.get_current_username()
+    >>> wine_prefix = lib_wine.get_and_check_wine_prefix('wine_test_32', username=username)
+    >>> install_wine_mono('wine_test_32', username=username)
+
+    >>> wine_prefix = lib_wine.get_and_check_wine_prefix('wine_test_64', username=username)
+    >>> install_wine_mono('wine_test_64', username=username)
+
+
     """
     if configmagick_linux.is_on_travis():
         lib_log_utils.banner_warning('Mono Installation does not work on Travis at the moment')
@@ -49,8 +71,6 @@ def install_wine_mono(wine_prefix: Union[str, pathlib.Path] = configmagick_linux
                                          wine_cache_directory=wine_cache_directory,
                                          mono_msi_filename=mono_msi_filename))
 
-    # TODO: see https://travis-ci.community/t/travis-functions-no-such-file-or-directory/2286/10
-
     download_mono_msi_files(username=username, force_download=False)
 
     lib_log_utils.log_verbose('Install "{mono_msi_filename}" on WINEPREFIX="{wine_prefix}"'
@@ -70,8 +90,29 @@ def install_wine_mono(wine_prefix: Union[str, pathlib.Path] = configmagick_linux
 def install_wine_mono_appwiz(wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
                              username: str = configmagick_linux.get_current_username()) -> None:
     """
-    install the mono version stated in appwiz.cpl - that does not work on travis, maybe some encoding issues
-    we prefer to install the latest wine-mono from github
+    install the mono version stated in appwiz.cpl - might be not the newest version, but compatible, we prefer to install the latest wine-mono from github
+
+
+    >>> wine_install.install_wine(wine_release='staging')  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+    OK
+    ...
+    >>> wine_machine_install.install_wine_machine(wine_prefix='wine_test_32',wine_arch='win32',\
+                                                  overwrite_existing_wine_machine=True)  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+    Using winetricks ...
+
+    >>> wine_machine_install.install_wine_machine(wine_prefix='wine_test_64',wine_arch='win64',\
+                                                  overwrite_existing_wine_machine=True)  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+    ---...
+    You are using a 64-bit WINEPREFIX. ...
+
+
+    >>> username = configmagick_linux.get_current_username()
+    >>> wine_prefix = lib_wine.get_and_check_wine_prefix('wine_test_32', username=username)
+    >>> install_wine_mono_appwiz('wine_test_32', username=username)
+
+    >>> wine_prefix = lib_wine.get_and_check_wine_prefix('wine_test_64', username=username)
+    >>> install_wine_mono_appwiz('wine_test_64', username=username)
+
     """
     wine_prefix = lib_wine.get_and_check_wine_prefix(wine_prefix, username)
     wine_arch = lib_wine.get_wine_arch_from_wine_prefix(wine_prefix=wine_prefix, username=username)

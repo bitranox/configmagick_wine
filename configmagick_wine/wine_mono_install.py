@@ -52,9 +52,6 @@ def install_wine_mono(wine_prefix: Union[str, pathlib.Path] = configmagick_linux
 
 
     """
-    if configmagick_linux.is_on_travis():
-        lib_log_utils.banner_warning('Mono Installation does not work on Travis at the moment')
-        return
 
     wine_prefix = lib_wine.get_and_check_wine_prefix(wine_prefix, username)
     wine_arch = lib_wine.get_wine_arch_from_wine_prefix(wine_prefix=wine_prefix, username=username)

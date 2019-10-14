@@ -71,21 +71,20 @@ def install_wine_gecko(wine_prefix: Union[str, pathlib.Path] = configmagick_linu
 
 def install_gecko_32(wine_prefix: Union[str, pathlib.Path], username: str) -> None:
     path_gecko_32_msi_filename = get_gecko_32_filename_from_appwiz(wine_prefix, username)
-    wine_arch = 'win32'
-    install_gecko_by_architecture(wine_prefix, username, path_gecko_32_msi_filename, wine_arch)
+    install_gecko_by_architecture(wine_prefix, username, path_gecko_32_msi_filename)
 
 
 def install_gecko_64(wine_prefix: Union[str, pathlib.Path], username: str) -> None:
     path_gecko_64_msi_filename = get_gecko_64_filename_from_appwiz(wine_prefix, username)
-    wine_arch = 'win64'
-    install_gecko_by_architecture(wine_prefix, username, path_gecko_64_msi_filename, wine_arch)
+    install_gecko_by_architecture(wine_prefix, username, path_gecko_64_msi_filename)
 
 
-def install_gecko_by_architecture(wine_prefix: Union[str, pathlib.Path], username: str, path_gecko_msi_filename: pathlib.Path, wine_arch: str) -> None:
+def install_gecko_by_architecture(wine_prefix: Union[str, pathlib.Path], username: str, path_gecko_msi_filename: pathlib.Path) -> None:
     path_wine_cache = lib_wine.get_path_wine_cache_for_user(username)
+    wine_arch = lib_wine.get_wine_arch_from_wine_prefix(wine_prefix, username)
     configmagick_linux.run_shell_command(
-        'WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" wine msiexec /i "{path_wine_cache}/{path_gecko_msi_filename}"'.format(
-            wine_prefix=wine_prefix, wine_arch=wine_arch, path_wine_cache=path_wine_cache, path_gecko_msi_filename=path_gecko_msi_filename
+        'runuser -l {username} -c \'WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" wine msiexec /i "{path_wine_cache}/{path_gecko_msi_filename}"\''.format(
+            username=username, wine_prefix=wine_prefix, wine_arch=wine_arch, path_wine_cache=path_wine_cache, path_gecko_msi_filename=path_gecko_msi_filename
         ))
 
 
@@ -205,7 +204,7 @@ def get_gecko_32_filename_from_appwiz(wine_prefix: Union[str, pathlib.Path], use
     if not path_appwiz.is_file():
         raise RuntimeError('can not determine Gecko MSI Filename, File "{path_appwiz}" does not exist'.format(path_appwiz=path_appwiz))
 
-    response = configmagick_linux.run_shell_command('strings -d --bytes=12 "{path_appwiz}" | grep wine_gecko | grep .msi'
+    response = configmagick_linux.run_shell_command('strings -d --bytes=12 "{path_appwiz}" | grep wine_gecko- | grep -x86.msi'
                                                     .format(path_appwiz=path_appwiz), shell=True, quiet=True)
     gecko_32_filename = response.stdout
     if not gecko_32_filename:
@@ -250,7 +249,7 @@ def get_gecko_64_filename_from_appwiz(wine_prefix: Union[str, pathlib.Path], use
     if not path_appwiz.is_file():
         raise RuntimeError('can not determine Gecko MSI Filename, File "{path_appwiz}" does not exist'.format(path_appwiz=path_appwiz))
 
-    response = configmagick_linux.run_shell_command('strings -d --bytes=12 "{path_appwiz}" | grep wine_gecko | grep .msi'
+    response = configmagick_linux.run_shell_command('strings -d --bytes=12 "{path_appwiz}" | grep wine_gecko- | grep -x86_64.msi'
                                                     .format(path_appwiz=path_appwiz), shell=True, quiet=True)
     gecko_64_filename = response.stdout
     if not gecko_64_filename:

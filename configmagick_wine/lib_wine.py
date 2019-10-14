@@ -157,12 +157,11 @@ def is_file_in_wine_cache(username: str, filename: pathlib.Path) -> bool:
 
 def download_file_to_winecache(download_link: str, filename: pathlib.Path, username: str) -> None:
     """
-    >>> # TODO: Tests verallgemeinern
     >>> download_link = 'https://source.winehq.org/winemono.php?v=4.9.3'
     >>> filename = pathlib.Path('wine-mono-4.9.3.msi')
-    >>> username = 'consul'
+    >>> username = configmagick_linux.get_current_username()
     >>> download_file_to_winecache(download_link=download_link, filename=filename, username=username)
-    >>> assert pathlib.Path('/home/consul/.cache/wine/wine-mono-4.9.3.msi').is_file()
+    >>> assert pathlib.Path( configmagick_linux.get_path_home_dir_current_user() / '.cache/wine/wine-mono-4.9.3.msi').is_file()
 
     """
     create_wine_cache_for_user(username=username)

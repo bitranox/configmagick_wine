@@ -47,9 +47,9 @@ def install_wine_mono(wine_prefix: Union[str, pathlib.Path] = configmagick_linux
 
     download_mono_msi_files(username=username, force_download=False)
 
-    lib_log_utils.log_verbose('Install "{mono_msi_filename}" on WINEPREFIX="{wine_prefix}"')\
-        .format(mono_msi_filename=mono_msi_filename,
-                wine_prefix=wine_prefix)
+    lib_log_utils.log_verbose('Install "{mono_msi_filename}" on WINEPREFIX="{wine_prefix}"'
+                              .format(mono_msi_filename=mono_msi_filename,
+                                      wine_prefix=wine_prefix))
 
     command = 'runuser -l {username} -c \'WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" wine msiexec /i "{wine_cache_directory}/{mono_msi_filename}"\''\
         .format(username=username,

@@ -1,7 +1,6 @@
 # ### STDLIB
 import pathlib
 import subprocess
-import time
 from typing import Union
 
 # ### OWN
@@ -28,11 +27,66 @@ except ImportError:                    # type: ignore # pragma: no cover
 
 def install_wine_gecko(wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
                        username: str = configmagick_linux.get_current_username()) -> None:
+    """
+    install 32 Bit Gecko for 32/64 Bit Wine, and 64 Bit Gecko for 64 Bit Wine
+
+    >>> wine_install.install_wine(wine_release='staging')  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+    OK
+    ...
+    >>> wine_machine_install.install_wine_machine(wine_prefix='wine_test_32',wine_arch='win32',\
+                                                  overwrite_existing_wine_machine=True)  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+    Using winetricks ...
+
+    >>> wine_machine_install.install_wine_machine(wine_prefix='wine_test_64',wine_arch='win64',\
+                                                  overwrite_existing_wine_machine=True)  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+    ---...
+    You are using a 64-bit WINEPREFIX. ...
+
+
+    >>> username = configmagick_linux.get_current_username()
+    >>> wine_prefix = lib_wine.get_and_check_wine_prefix('wine_test_32', username=username)
+    >>> install_wine_gecko('wine_test_32', username=username)
+
+    >>> wine_prefix = lib_wine.get_and_check_wine_prefix('wine_test_64', username=username)
+    >>> install_wine_gecko('wine_test_64', username=username)
+
+
+    """
+
+    lib_log_utils.log_verbose('Install Gecko on WINEPREFIX="{wine_prefix}"'.format(wine_prefix=wine_prefix))
     wine_prefix = lib_wine.get_and_check_wine_prefix(wine_prefix, username)    # prepend /home/user if needed
-    # TODO
     download_gecko_msi_files(wine_prefix, username)
     wine_arch = lib_wine.get_wine_arch_from_wine_prefix(wine_prefix, username)
+
+    if wine_arch == 'win32' or wine_arch == 'win64':
+        lib_log_utils.log_verbose('Install Gecko 32 Bit on WINEPREFIX="{wine_prefix}"'.format(wine_prefix=wine_prefix))
+        install_gecko_32(wine_prefix, username)
+
+    if wine_arch == 'win64':
+        lib_log_utils.log_verbose('Install Gecko 64 Bit on WINEPREFIX="{wine_prefix}"'.format(wine_prefix=wine_prefix))
+        install_gecko_64(wine_prefix, username)
+
     lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)  # it is cheap, just in case
+
+
+def install_gecko_32(wine_prefix: Union[str, pathlib.Path], username: str) -> None:
+    path_gecko_32_msi_filename = get_gecko_32_filename_from_appwiz(wine_prefix, username)
+    wine_arch = 'win32'
+    install_gecko_by_architecture(wine_prefix, username, path_gecko_32_msi_filename, wine_arch)
+
+
+def install_gecko_64(wine_prefix: Union[str, pathlib.Path], username: str) -> None:
+    path_gecko_64_msi_filename = get_gecko_64_filename_from_appwiz(wine_prefix, username)
+    wine_arch = 'win64'
+    install_gecko_by_architecture(wine_prefix, username, path_gecko_64_msi_filename, wine_arch)
+
+
+def install_gecko_by_architecture(wine_prefix: Union[str, pathlib.Path], username: str, path_gecko_msi_filename: pathlib.Path, wine_arch: str) -> None:
+    path_wine_cache = lib_wine.get_path_wine_cache_for_user(username)
+    configmagick_linux.run_shell_command(
+        'WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" wine msiexec /i "{path_wine_cache}/{path_gecko_msi_filename}"'.format(
+            wine_prefix=wine_prefix, wine_arch=wine_arch, path_wine_cache=path_wine_cache, path_gecko_msi_filename=path_gecko_msi_filename
+        ))
 
 
 def download_gecko_msi_files(wine_prefix: Union[str, pathlib.Path], username: str) -> None:

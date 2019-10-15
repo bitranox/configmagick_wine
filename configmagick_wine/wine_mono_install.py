@@ -207,7 +207,7 @@ def get_mono_msi_filename_from_appwiz(wine_prefix: pathlib.Path, username: str) 
         raise RuntimeError('can not determine Mono MSI Filename, File "{path_appwiz}" does not exist'.format(path_appwiz=path_appwiz))
 
     # this fails from unknown reason on travis xenial !
-    response = configmagick_linux.run_shell_command('strings -d --bytes=12 --encoding=s "{path_appwiz}" | grep wine-mono | grep .msi'
+    response = configmagick_linux.run_shell_command('strings -d --bytes=12 --encoding=s "{path_appwiz}" | grep "wine\\-mono\\-" | grep "\\.msi"'
                                                     .format(path_appwiz=path_appwiz), shell=True, quiet=True)
     mono_msi_filename = response.stdout
 

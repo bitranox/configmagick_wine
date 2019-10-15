@@ -25,8 +25,8 @@ except ImportError:                     # type: ignore # pragma: no cover
     import wine_machine_install                 # type: ignore # pragma: no cover
 
 
-def install_wine_mono(wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
-                      username: str = configmagick_linux.get_current_username()) -> None:
+def install_wine_mono_latest(wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
+                             username: str = configmagick_linux.get_current_username()) -> None:
     """
     install the latest mono version from github
 
@@ -45,10 +45,10 @@ def install_wine_mono(wine_prefix: Union[str, pathlib.Path] = configmagick_linux
 
     >>> username = configmagick_linux.get_current_username()
     >>> wine_prefix = lib_wine.get_and_check_wine_prefix('wine_test_32', username=username)
-    >>> install_wine_mono('wine_test_32', username=username)
+    >>> install_wine_mono_latest('wine_test_32', username=username)
 
     >>> wine_prefix = lib_wine.get_and_check_wine_prefix('wine_test_64', username=username)
-    >>> install_wine_mono('wine_test_64', username=username)
+    >>> install_wine_mono_latest('wine_test_64', username=username)
 
 
     """
@@ -84,8 +84,8 @@ def install_wine_mono(wine_prefix: Union[str, pathlib.Path] = configmagick_linux
     lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)  # it is cheap, just in case
 
 
-def install_wine_mono_appwiz(wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
-                             username: str = configmagick_linux.get_current_username()) -> None:
+def install_wine_mono_recommended(wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
+                                  username: str = configmagick_linux.get_current_username()) -> None:
     """
     install the mono version stated in appwiz.cpl - might be not the newest version, but compatible, we prefer to install the latest wine-mono from github
 
@@ -105,25 +105,25 @@ def install_wine_mono_appwiz(wine_prefix: Union[str, pathlib.Path] = configmagic
 
     >>> username = configmagick_linux.get_current_username()
     >>> wine_prefix = lib_wine.get_and_check_wine_prefix('wine_test_32', username=username)
-    >>> install_wine_mono_appwiz('wine_test_32', username=username)
+    >>> install_wine_mono_recommended('wine_test_32', username=username)
 
     >>> wine_prefix = lib_wine.get_and_check_wine_prefix('wine_test_64', username=username)
-    >>> install_wine_mono_appwiz('wine_test_64', username=username)
+    >>> install_wine_mono_recommended('wine_test_64', username=username)
 
     """
     wine_prefix = lib_wine.get_and_check_wine_prefix(wine_prefix, username)
     wine_arch = lib_wine.get_wine_arch_from_wine_prefix(wine_prefix=wine_prefix, username=username)
     mono_msi_filename = get_mono_msi_filename_from_appwiz(wine_prefix=wine_prefix, username=username)
     wine_cache_directory = lib_wine.get_path_wine_cache_for_user(username=username)
-    lib_log_utils.banner_debug('Installing Wine Mono :\n'
-                               'WINEPREFIX="{wine_prefix}"\n'
-                               'WINEARCH="{wine_arch}"\n'
-                               'mono_msi_filename="{mono_msi_filename}"\n'
-                               'wine_cache_directory="{wine_cache_directory}"'
-                               .format(wine_prefix=wine_prefix,
-                                       wine_arch=wine_arch,
-                                       wine_cache_directory=wine_cache_directory,
-                                       mono_msi_filename=mono_msi_filename))
+    lib_log_utils.banner_verbose('Installing Wine Mono :\n'
+                                 'WINEPREFIX="{wine_prefix}"\n'
+                                 'WINEARCH="{wine_arch}"\n'
+                                 'mono_msi_filename="{mono_msi_filename}"\n'
+                                 'wine_cache_directory="{wine_cache_directory}"'
+                                 .format(wine_prefix=wine_prefix,
+                                         wine_arch=wine_arch,
+                                         wine_cache_directory=wine_cache_directory,
+                                         mono_msi_filename=mono_msi_filename))
 
     download_mono_msi_files(username=username, force_download=False)
     command = 'runuser -l {username} -c \'WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" wine msiexec /i "{wine_cache_directory}/{mono_msi_filename}"\''\

@@ -57,7 +57,10 @@ def main() -> None:
                 'install_winetricks': wine_install.install_winetricks,
                 'update_winetricks': wine_install.update_winetricks,
                 'install_wine_machine': wine_machine_install.install_wine_machine,
-                'install_wine_mono': wine_mono_install.install_wine_mono,
+                'disable_gui_crash_dialogs': wine_machine_install.disable_gui_crash_dialogs,
+                'set_windows_version': wine_machine_install.set_windows_version,
+                'install_wine_mono_latest': wine_mono_install.install_wine_mono_latest,
+                'install_wine_mono_recommended': wine_mono_install.install_wine_mono_recommended,
                 'install_wine_gecko': wine_gecko_install.install_wine_gecko,
                 'fix_wine_permissions': lib_wine.fix_wine_permissions,
             })

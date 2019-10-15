@@ -34,14 +34,10 @@ def install_wine_gecko(wine_prefix: Union[str, pathlib.Path] = configmagick_linu
     OK
     ...
     >>> wine_machine_install.install_wine_machine(wine_prefix='wine_test_32',wine_arch='win32',\
-                                                  overwrite_existing_wine_machine=True)  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-    Using winetricks ...
+                                                  overwrite_existing_wine_machine=True)
 
     >>> wine_machine_install.install_wine_machine(wine_prefix='wine_test_64',wine_arch='win64',\
-                                                  overwrite_existing_wine_machine=True)  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-    ---...
-    You are using a 64-bit WINEPREFIX. ...
-
+                                                  overwrite_existing_wine_machine=True)
 
     >>> username = configmagick_linux.get_current_username()
     >>> wine_prefix = lib_wine.get_and_check_wine_prefix('wine_test_32', username=username)
@@ -49,10 +45,7 @@ def install_wine_gecko(wine_prefix: Union[str, pathlib.Path] = configmagick_linu
 
     >>> wine_prefix = lib_wine.get_and_check_wine_prefix('wine_test_64', username=username)
     >>> install_wine_gecko('wine_test_64', username=username)
-
-
     """
-
     lib_log_utils.log_verbose('Install Gecko on WINEPREFIX="{wine_prefix}"'.format(wine_prefix=wine_prefix))
     wine_prefix = lib_wine.get_and_check_wine_prefix(wine_prefix, username)    # prepend /home/user if needed
     download_gecko_msi_files(wine_prefix, username)
@@ -177,14 +170,10 @@ def get_gecko_32_filename_from_appwiz(wine_prefix: Union[str, pathlib.Path], use
     OK
     ...
     >>> wine_machine_install.install_wine_machine(wine_prefix='wine_test_32',wine_arch='win32',\
-                                                  overwrite_existing_wine_machine=True)  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-    Using winetricks ...
+                                                  overwrite_existing_wine_machine=True)
 
     >>> wine_machine_install.install_wine_machine(wine_prefix='wine_test_64',wine_arch='win64',\
-                                                  overwrite_existing_wine_machine=True)  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-    ---...
-    You are using a 64-bit WINEPREFIX. ...
-
+                                                  overwrite_existing_wine_machine=True)
 
     >>> username = configmagick_linux.get_current_username()
     >>> wine_prefix = lib_wine.get_and_check_wine_prefix('wine_test_32', username=username)
@@ -193,7 +182,6 @@ def get_gecko_32_filename_from_appwiz(wine_prefix: Union[str, pathlib.Path], use
     >>> wine_prefix = lib_wine.get_and_check_wine_prefix('wine_test_64', username=username)
     >>> path_gecko_32_filename = get_gecko_32_filename_from_appwiz(wine_prefix, username)
     >>> assert str(path_gecko_32_filename).startswith('wine_gecko-') and str(path_gecko_32_filename).endswith('-x86.msi')
-
     """
     wine_arch = lib_wine.get_wine_arch_from_wine_prefix(wine_prefix=wine_prefix, username=username)
     if wine_arch == 'win32':
@@ -222,14 +210,10 @@ def get_gecko_64_filename_from_appwiz(wine_prefix: Union[str, pathlib.Path], use
     OK
     ...
     >>> wine_machine_install.install_wine_machine(wine_prefix='wine_test_32',wine_arch='win32',\
-                                                  overwrite_existing_wine_machine=True)  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-    Using winetricks ...
+                                                  overwrite_existing_wine_machine=True)
 
     >>> wine_machine_install.install_wine_machine(wine_prefix='wine_test_64',wine_arch='win64',\
-                                                  overwrite_existing_wine_machine=True)  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-    ---...
-    You are using a 64-bit WINEPREFIX. ...
-
+                                                  overwrite_existing_wine_machine=True)
 
     >>> username = configmagick_linux.get_current_username()
     >>> wine_prefix = lib_wine.get_and_check_wine_prefix('wine_test_32', username=username)
@@ -238,7 +222,6 @@ def get_gecko_64_filename_from_appwiz(wine_prefix: Union[str, pathlib.Path], use
     >>> wine_prefix = lib_wine.get_and_check_wine_prefix('wine_test_64', username=username)
     >>> path_gecko_64_filename = get_gecko_64_filename_from_appwiz(wine_prefix, username)
     >>> assert str(path_gecko_64_filename).startswith('wine_gecko-') and str(path_gecko_64_filename).endswith('-x86_64.msi')
-
     """
     wine_arch = lib_wine.get_wine_arch_from_wine_prefix(wine_prefix=wine_prefix, username=username)
     if wine_arch == 'win32':

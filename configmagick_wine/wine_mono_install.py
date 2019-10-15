@@ -7,9 +7,7 @@ from typing import Union
 import configmagick_linux
 import lib_log_utils
 
-
 # ####### PROJ
-
 try:
     # imports for local pytest
     from . import lib_wine              # type: ignore # pragma: no cover
@@ -34,14 +32,10 @@ def install_wine_mono_latest(wine_prefix: Union[str, pathlib.Path] = configmagic
     OK
     ...
     >>> wine_machine_install.install_wine_machine(wine_prefix='wine_test_32',wine_arch='win32',\
-                                                  overwrite_existing_wine_machine=True)  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-    Using winetricks ...
+                                                  overwrite_existing_wine_machine=True)
 
     >>> wine_machine_install.install_wine_machine(wine_prefix='wine_test_64',wine_arch='win64',\
-                                                  overwrite_existing_wine_machine=True)  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-    ---...
-    You are using a 64-bit WINEPREFIX. ...
-
+                                                  overwrite_existing_wine_machine=True)
 
     >>> username = configmagick_linux.get_current_username()
     >>> wine_prefix = lib_wine.get_and_check_wine_prefix('wine_test_32', username=username)
@@ -49,10 +43,7 @@ def install_wine_mono_latest(wine_prefix: Union[str, pathlib.Path] = configmagic
 
     >>> wine_prefix = lib_wine.get_and_check_wine_prefix('wine_test_64', username=username)
     >>> install_wine_mono_latest('wine_test_64', username=username)
-
-
     """
-
     wine_prefix = lib_wine.get_and_check_wine_prefix(wine_prefix, username)
     wine_arch = lib_wine.get_wine_arch_from_wine_prefix(wine_prefix=wine_prefix, username=username)
     mono_download_link = get_wine_mono_download_link_from_github()
@@ -94,14 +85,10 @@ def install_wine_mono_recommended(wine_prefix: Union[str, pathlib.Path] = config
     OK
     ...
     >>> wine_machine_install.install_wine_machine(wine_prefix='wine_test_32',wine_arch='win32',\
-                                                  overwrite_existing_wine_machine=True)  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-    Using winetricks ...
+                                                  overwrite_existing_wine_machine=True)
 
     >>> wine_machine_install.install_wine_machine(wine_prefix='wine_test_64',wine_arch='win64',\
-                                                  overwrite_existing_wine_machine=True)  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-    ---...
-    You are using a 64-bit WINEPREFIX. ...
-
+                                                  overwrite_existing_wine_machine=True)
 
     >>> username = configmagick_linux.get_current_username()
     >>> wine_prefix = lib_wine.get_and_check_wine_prefix('wine_test_32', username=username)
@@ -109,7 +96,6 @@ def install_wine_mono_recommended(wine_prefix: Union[str, pathlib.Path] = config
 
     >>> wine_prefix = lib_wine.get_and_check_wine_prefix('wine_test_64', username=username)
     >>> install_wine_mono_recommended('wine_test_64', username=username)
-
     """
     wine_prefix = lib_wine.get_and_check_wine_prefix(wine_prefix, username)
     wine_arch = lib_wine.get_wine_arch_from_wine_prefix(wine_prefix=wine_prefix, username=username)
@@ -144,9 +130,7 @@ def download_mono_msi_files(username: str, force_download: bool = False) -> None
     >>> download_mono_msi_files(username=username, force_download=force_download)
     >>> force_download = False
     >>> download_mono_msi_files(username=username, force_download=force_download)
-
     """
-
     lib_log_utils.log_verbose('Download Mono MSI Files to Wine Cache')
     mono_download_link = get_wine_mono_download_link_from_github()
     mono_msi_filename = pathlib.Path(mono_download_link.rsplit('/', 1)[1])
@@ -177,14 +161,10 @@ def get_mono_msi_filename_from_appwiz(wine_prefix: pathlib.Path, username: str) 
     OK
     ...
     >>> wine_machine_install.install_wine_machine(wine_prefix='wine_test_32',wine_arch='win32',\
-                                                  overwrite_existing_wine_machine=True)  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-    Using winetricks ...
+                                                  overwrite_existing_wine_machine=True)
 
     >>> wine_machine_install.install_wine_machine(wine_prefix='wine_test_64',wine_arch='win64',\
-                                                  overwrite_existing_wine_machine=True)  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-    ---...
-    You are using a 64-bit WINEPREFIX. ...
-
+                                                  overwrite_existing_wine_machine=True)
 
     >>> username = configmagick_linux.get_current_username()
     >>> wine_prefix = lib_wine.get_and_check_wine_prefix('wine_test_32', username=username)
@@ -193,10 +173,7 @@ def get_mono_msi_filename_from_appwiz(wine_prefix: pathlib.Path, username: str) 
     >>> wine_prefix = lib_wine.get_and_check_wine_prefix('wine_test_64', username=username)
     >>> path_mono_msi_filename = get_mono_msi_filename_from_appwiz(wine_prefix, username)
     >>> assert str(path_mono_msi_filename).startswith('wine-mono-') and str(path_mono_msi_filename).endswith('.msi')
-
-
     """
-
     wine_arch = lib_wine.get_wine_arch_from_wine_prefix(wine_prefix=wine_prefix, username=username)
     if wine_arch == 'win32':
         path_appwiz = wine_prefix / 'drive_c/windows/system32/appwiz.cpl'
@@ -243,7 +220,6 @@ def get_wine_mono_download_link_from_github() -> str:
     """
     >>> get_wine_mono_download_link_from_github()  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
     'https://github.com//madewokherd/wine-mono/releases/download/wine-mono-.../wine-mono-...msi'
-
     """
     download_link = 'https://github.com/madewokherd/wine-mono/releases/latest'
     filename = configmagick_linux.get_path_home_dir_current_user() / 'mono-latest-release.html'

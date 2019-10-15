@@ -45,13 +45,10 @@ def install_wine_machine(wine_prefix: Union[str, pathlib.Path] = configmagick_li
     ...
 
     >>> install_wine_machine(wine_prefix='wine_test_32', \
-        wine_arch='win32', overwrite_existing_wine_machine=True)    # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-    Using winetricks ...
+        wine_arch='win32', overwrite_existing_wine_machine=True)
 
     >>> install_wine_machine(wine_prefix='wine_test_64', \
-        wine_arch='win64', overwrite_existing_wine_machine=True)    # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-    ---...
-    You are using a 64-bit WINEPREFIX. ...
+        wine_arch='win64', overwrite_existing_wine_machine=True)
 
     >>> install_wine_machine(wine_prefix='wine_test_32', \
         wine_arch='win32', overwrite_existing_wine_machine=False)   # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE

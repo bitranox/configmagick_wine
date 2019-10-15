@@ -207,7 +207,7 @@ def get_mono_msi_filename_from_appwiz(wine_prefix: pathlib.Path, username: str) 
         raise RuntimeError('can not determine Mono MSI Filename, File "{path_appwiz}" does not exist'.format(path_appwiz=path_appwiz))
 
     # this fails from unknown reason on travis xenial !
-    response = configmagick_linux.run_shell_command('strings -d --bytes=12 --encoding=s "{path_appwiz}" | grep -F "wine-mono-" | grep -F ".msi"'
+    response = configmagick_linux.run_shell_command('strings -d --bytes=12 --encoding=s "{path_appwiz}" | fgrep "wine-mono-" | fgrep ".msi"'
                                                     .format(path_appwiz=path_appwiz), shell=True, quiet=True)
     mono_msi_filename = response.stdout
 
@@ -249,7 +249,7 @@ def get_wine_mono_download_link_from_github() -> str:
     filename = configmagick_linux.get_path_home_dir_current_user() / 'mono-latest-release.html'
     configmagick_linux.download_file(download_link=download_link, filename=filename)
 
-    link = configmagick_linux.run_shell_command('grep -F ".msi" "{filename}" | grep -F "wine-mono" | grep -F "href="'
+    link = configmagick_linux.run_shell_command('fgrep ".msi" "{filename}" | fgrep "wine-mono" | fgrep "href="'
                                                 .format(filename=filename), shell=True, quiet=True).stdout
     link = link.split('href="', 1)[1]
     link = 'https://github.com/' + link.split('"', 1)[0]

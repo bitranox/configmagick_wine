@@ -249,7 +249,7 @@ def get_wine_mono_download_link_from_github() -> str:
     filename = configmagick_linux.get_path_home_dir_current_user() / 'mono-latest-release.html'
     configmagick_linux.download_file(download_link=download_link, filename=filename)
 
-    link = configmagick_linux.run_shell_command('grep ".msi" "{filename}" | grep wine-mono | grep href='
+    link = configmagick_linux.run_shell_command('grep ".msi" "{filename}" | grep "wine-mono" | grep "href="'
                                                 .format(filename=filename), shell=True, quiet=True).stdout
     link = link.split('href="', 1)[1]
     link = 'https://github.com/' + link.split('"', 1)[0]

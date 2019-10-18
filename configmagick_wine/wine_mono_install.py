@@ -189,7 +189,7 @@ def get_mono_msi_filename_from_appwiz(wine_prefix: pathlib.Path, username: str) 
     mono_msi_filename = response.stdout
 
     if not mono_msi_filename:
-        raise RuntimeError('can not determine Mono MSI Filename from WINEPREFIX="wine_prefix"'
+        raise RuntimeError('can not determine Mono MSI Filename from WINEPREFIX="{wine_prefix}"'
                            .format(wine_prefix=wine_prefix))
     path_mono_msi = pathlib.Path(mono_msi_filename)
     return path_mono_msi

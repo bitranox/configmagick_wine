@@ -57,7 +57,7 @@ def add_wine_key(linux_release_name: str) -> None:
     >>> # add_wine_key(configmagick_linux.get_linux_release_name())
 
     """
-    lib_log_utils.log_verbose('Add Wine Key and Repository, linux_release_name="linux_release_name"'
+    lib_log_utils.log_verbose('Add Wine Key and Repository, linux_release_name="{linux_release_name}"'
                               .format(linux_release_name=linux_release_name))
     configmagick_linux.run_shell_command('rm -f ./winehq.key*', shell=True)
     configmagick_linux.run_shell_command('wget -nv -c https://dl.winehq.org/wine-builds/winehq.key')
@@ -93,8 +93,7 @@ def install_wine_packages(wine_release: str, reinstall: bool = False) -> None:
     configmagick_linux.install_linux_packages(['cabextract', 'libxml2', 'libpng-dev'], reinstall=reinstall)
     lib_log_utils.log_success('Installed OK - Wine Release: "{wine_release}", Wine Version: "{wine_version_number}"'
                               .format(wine_release=wine_release,
-                                      wine_version_number=get_wine_version_number(),
-                                      linux_release_name=configmagick_linux.get_linux_release_name())
+                                      wine_version_number=get_wine_version_number())
                               )
 
 

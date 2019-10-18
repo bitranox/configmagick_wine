@@ -47,6 +47,8 @@ except ImportError:                         # type: ignore # pragma: no cover
 
 
 def main() -> None:
+    exit_code = 0
+    # noinspection PyBroadException
     try:
         lib_log_utils.BannerSettings.called_via_commandline = True
         # we must not call fire if the program is called via pytest
@@ -68,16 +70,25 @@ def main() -> None:
     except FileNotFoundError:
         # see https://www.thegeekstuff.com/2010/10/linux-error-codes for error codes
         # No such file or directory
-        sys.exit(errno.ENOENT)      # pragma: no cover
+        exit_code = errno.ENOENT      # pragma: no cover
     except FileExistsError:
         # File exists
-        sys.exit(errno.EEXIST)      # pragma: no cover
+        exit_code = errno.EEXIST       # pragma: no cover
     except TypeError:
         # Invalid Argument
-        sys.exit(errno.EINVAL)      # pragma: no cover
-        # Invalid Argument
+        exit_code = errno.EINVAL       # pragma: no cover
     except ValueError:
-        sys.exit(errno.EINVAL)      # pragma: no cover
+        # Invalid Argument
+        exit_code = errno.EINVAL       # pragma: no cover
+    except RuntimeError:
+        # Operation not permitted
+        exit_code = errno.EPERM       # pragma: no cover
+    except Exception:
+        # Operation not permitted
+        exit_code = errno.EPERM       # pragma: no cover
+    finally:
+        lib_log_utils.log_exception_traceback(s_error='Unexpected Exception')
+        sys.exit(exit_code)
 
 
 if __name__ == '__main__':

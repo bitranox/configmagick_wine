@@ -232,6 +232,8 @@ install:
     - export REPOSITORY_NAME=${TRAVIS_REPO_SLUG#*/} && ${lib_bash_color} clr_bold clr_green "Export Repository Name ${REPOSITORY_NAME}"
 
     - if [[ ${CMDPREFIX} == "wine" ]]; then configmagick_wine install_wine ${wine_release}; fi
+    - if [[ ${CMDPREFIX} == "wine" ]]; then configmagick_wine install_winetricks; fi
+    - if [[ ${CMDPREFIX} == "wine" ]]; then configmagick_wine update_winetricks; fi
     - if [[ ${CMDPREFIX} == "wine" ]]; then configmagick_wine install_wine_machine --wine_prefix=${WINEPREFIX} --wine_arch=${WINEARCH}; fi
     - if [[ ${CMDPREFIX} == "wine" ]]; then configmagick_wine disable_gui_crash_dialogs --wine_prefix=${WINEPREFIX}; fi
     - if [[ ${CMDPREFIX} == "wine" ]]; then configmagick_wine install_wine_mono_latest --wine_prefix=${WINEPREFIX}; fi

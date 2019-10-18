@@ -75,10 +75,15 @@ def install_gecko_64(wine_prefix: Union[str, pathlib.Path], username: str) -> No
 def install_gecko_by_architecture(wine_prefix: Union[str, pathlib.Path], username: str, path_gecko_msi_filename: pathlib.Path) -> None:
     path_wine_cache = lib_wine.get_path_wine_cache_for_user(username)
     wine_arch = lib_wine.get_wine_arch_from_wine_prefix(wine_prefix, username)
-    configmagick_linux.run_shell_command(
-        'runuser -l {username} -c \'WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" wine msiexec /i "{path_wine_cache}/{path_gecko_msi_filename}"\''.format(
-            username=username, wine_prefix=wine_prefix, wine_arch=wine_arch, path_wine_cache=path_wine_cache, path_gecko_msi_filename=path_gecko_msi_filename
-        ))
+
+    command = 'runuser -l {username} -c \'WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" wine msiexec /i "{path_wine_cache}/{path_gecko_msi_filename}"\''\
+        .format(username=username,
+                wine_prefix=wine_prefix,
+                wine_arch=wine_arch,
+                path_wine_cache=path_wine_cache,
+                path_gecko_msi_filename=path_gecko_msi_filename
+                )
+    configmagick_linux.run_shell_command(command, shell=True)
 
 
 def download_gecko_msi_files(wine_prefix: Union[str, pathlib.Path], username: str) -> None:

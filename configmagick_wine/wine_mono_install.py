@@ -143,20 +143,28 @@ def download_mono_msi_files(username: str, force_download: bool = False) -> None
     mono_download_link = get_wine_mono_download_link_from_github()
     mono_msi_filename = pathlib.Path(mono_download_link.rsplit('/', 1)[1])
 
-    if not lib_wine.is_file_in_wine_cache(username=username, filename=mono_msi_filename) or force_download:
+    if lib_wine.is_file_in_wine_cache(username=username, filename=mono_msi_filename) or force_download:
         if force_download:
             lib_wine.remove_file_from_winecache(filename=mono_msi_filename, username=username)
             lib_wine.download_file_to_winecache(download_link=mono_download_link, filename=mono_msi_filename, username=username)
+    else:
+        lib_wine.download_file_to_winecache(download_link=mono_download_link, filename=mono_msi_filename, username=username)
 
 
 def download_mono_msi_files_appwiz(wine_prefix: Union[str, pathlib.Path], username: str, force_download: bool = False) -> None:
     wine_prefix = lib_wine.get_and_check_wine_prefix(wine_prefix, username)
     mono_msi_filename = get_mono_msi_filename_from_appwiz(wine_prefix=wine_prefix, username=username)
-    if not lib_wine.is_file_in_wine_cache(username=username, filename=mono_msi_filename) or force_download:
+    mono_download_link = get_wine_mono_download_link_from_msi_filename(mono_msi_filename=mono_msi_filename)
+    mono_download_link_backup = get_wine_mono_download_backup_link_from_msi_filename(mono_msi_filename=mono_msi_filename)
+
+    if lib_wine.is_file_in_wine_cache(username=username, filename=mono_msi_filename) or force_download:
         if force_download:
             lib_wine.remove_file_from_winecache(filename=mono_msi_filename, username=username)
-        mono_download_link = get_wine_mono_download_link_from_msi_filename(mono_msi_filename=mono_msi_filename)
-        mono_download_link_backup = get_wine_mono_download_backup_link_from_msi_filename(mono_msi_filename=mono_msi_filename)
+            try:
+                lib_wine.download_file_to_winecache(download_link=mono_download_link, filename=mono_msi_filename, username=username)
+            except subprocess.CalledProcessError:
+                lib_wine.download_file_to_winecache(download_link=mono_download_link_backup, filename=mono_msi_filename, username=username)
+    else:
         try:
             lib_wine.download_file_to_winecache(download_link=mono_download_link, filename=mono_msi_filename, username=username)
         except subprocess.CalledProcessError:

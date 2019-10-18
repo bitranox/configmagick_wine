@@ -197,17 +197,22 @@ def get_gecko_32_filename_from_appwiz(wine_prefix: Union[str, pathlib.Path], use
     if not path_appwiz.is_file():
         raise RuntimeError('can not determine Gecko MSI Filename, File "{path_appwiz}" does not exist'.format(path_appwiz=path_appwiz))
 
-    # lib_wine.fix_wine_permissions(wine_prefix, username)
     """
     response = configmagick_linux.run_shell_command('strings -d --bytes=12 --encoding=s "{path_appwiz}" | fgrep "wine_gecko-" | fgrep "x86.msi"'
                                                     .format(path_appwiz=path_appwiz), shell=True, quiet=True)
     """
-    response = configmagick_linux.run_shell_command('strings -d --bytes=12 --encoding=s "{path_appwiz}"'
-                                                    .format(path_appwiz=path_appwiz), shell=True)
     response = configmagick_linux.run_shell_command('strings -d --bytes=12 --encoding=s "{path_appwiz}" | fgrep "wine_gecko-"'
                                                     .format(path_appwiz=path_appwiz), shell=True)
+    lib_log_utils.log_warning('Grep Gecko : {result}'.format(result=response.stdout))
+
     response = configmagick_linux.run_shell_command('strings -d --bytes=12 --encoding=s "{path_appwiz}" | fgrep "x86.msi"'
                                                     .format(path_appwiz=path_appwiz), shell=True)
+    lib_log_utils.log_warning('Grep x86 : {result}'.format(result=response.stdout))
+
+    response = configmagick_linux.run_shell_command('strings -d --bytes=12 --encoding=s "{path_appwiz}" | fgrep "wine_gecko-" | fgrep "x86.msi"'
+                                                    .format(path_appwiz=path_appwiz), shell=True, quiet=True)
+    lib_log_utils.log_warning('Grep Both : {result}'.format(result=response.stdout))
+
 
     gecko_32_filename = response.stdout
     if not gecko_32_filename:

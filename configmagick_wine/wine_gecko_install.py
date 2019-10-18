@@ -197,26 +197,15 @@ def get_gecko_32_filename_from_appwiz(wine_prefix: Union[str, pathlib.Path], use
     if not path_appwiz.is_file():
         raise RuntimeError('can not determine Gecko MSI Filename, File "{path_appwiz}" does not exist'.format(path_appwiz=path_appwiz))
 
-    """
-    response = configmagick_linux.run_shell_command('strings -d --bytes=12 --encoding=s "{path_appwiz}" | fgrep "wine_gecko-" | fgrep "x86.msi"'
-                                                    .format(path_appwiz=path_appwiz), shell=True, quiet=True)
-    """
-    response = configmagick_linux.run_shell_command('strings -d --bytes=12 --encoding=s "{path_appwiz}" | fgrep "wine_gecko-"'
-                                                    .format(path_appwiz=path_appwiz), shell=True)
-    lib_log_utils.log_warning('Grep Gecko : {result}'.format(result=response.stdout))
+    try:
+        response = configmagick_linux.run_shell_command('strings -d --bytes=12 --encoding=s "{path_appwiz}" | fgrep "wine_gecko-" | fgrep "x86.msi"'
+                                                        .format(path_appwiz=path_appwiz), shell=True, quiet=True)
+        gecko_32_filename = response.stdout
+    except subprocess.CalledProcessError:
+        # this happens on old wine versions, the wine_gecko-2.47-x86.msi is not present in the appwiz.cpl
+        lib_log_utils.log_warning('Can not determine Gecko Version from appwiz.cpl - assuming "wine_gecko-2.47-x86.msi"')
+        gecko_32_filename = 'wine_gecko-2.47-x86.msi'
 
-    response = configmagick_linux.run_shell_command('strings -d --bytes=12 --encoding=s "{path_appwiz}" | fgrep "x86.msi"'
-                                                    .format(path_appwiz=path_appwiz), shell=True)
-    lib_log_utils.log_warning('Grep x86 : {result}'.format(result=response.stdout))
-
-    response = configmagick_linux.run_shell_command('strings -d --bytes=12 --encoding=s "{path_appwiz}" | fgrep "wine_gecko-" | fgrep "x86.msi"'
-                                                    .format(path_appwiz=path_appwiz), shell=True, quiet=True)
-    lib_log_utils.log_warning('Grep Both : {result}'.format(result=response.stdout))
-
-
-    gecko_32_filename = response.stdout
-    if not gecko_32_filename:
-        raise RuntimeError('can not determine Gecko 32 Bit MSI File Name for WINEPREFIX="{wine_prefix}"'.format(wine_prefix=wine_prefix))
     path_gecko_32_filename = pathlib.Path(gecko_32_filename)
     return path_gecko_32_filename
 

@@ -87,8 +87,9 @@ def main() -> None:
         # Operation not permitted
         exit_code = errno.EPERM       # pragma: no cover
     finally:
-        lib_log_utils.log_exception_traceback(s_error='Unexpected Exception')
-        sys.exit(exit_code)
+        if exit_code:
+            lib_log_utils.log_exception_traceback(s_error='Unexpected Exception')
+            sys.exit(exit_code)
 
 
 if __name__ == '__main__':

@@ -198,7 +198,7 @@ def get_gecko_32_filename_from_appwiz(wine_prefix: Union[str, pathlib.Path], use
     if not path_appwiz.is_file():
         raise RuntimeError('can not determine Gecko MSI Filename, File "{path_appwiz}" does not exist'.format(path_appwiz=path_appwiz))
 
-    response = configmagick_linux.run_shell_command('strings -d --bytes=4 --encoding=s "{path_appwiz}" | fgrep "wine_gecko" | fgrep "msi"'
+    response = configmagick_linux.run_shell_command('strings --bytes=4 --encoding=s "{path_appwiz}" | fgrep "wine_gecko" | fgrep "msi"'
                                                     .format(path_appwiz=path_appwiz), shell=True, quiet=True)
     gecko_32_filename = response.stdout
     if not gecko_32_filename:

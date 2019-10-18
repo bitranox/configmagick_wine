@@ -201,7 +201,7 @@ def get_gecko_32_filename_from_appwiz(wine_prefix: Union[str, pathlib.Path], use
         response = configmagick_linux.run_shell_command('strings -d --bytes=12 --encoding=s "{path_appwiz}" | fgrep "wine_gecko-" | fgrep "x86.msi"'
                                                         .format(path_appwiz=path_appwiz), shell=True, quiet=True)
         gecko_32_filename = response.stdout
-    except subprocess.CalledProcessError:
+    except (subprocess.CalledProcessError, RuntimeError):
         # this happens on old wine versions, the wine_gecko-2.47-x86.msi is not present in the appwiz.cpl
         lib_log_utils.log_warning('Can not determine Gecko Version from appwiz.cpl - assuming "wine_gecko-2.47-x86.msi"')
         gecko_32_filename = 'wine_gecko-2.47-x86.msi'
@@ -241,10 +241,14 @@ def get_gecko_64_filename_from_appwiz(wine_prefix: Union[str, pathlib.Path], use
     if not path_appwiz.is_file():
         raise RuntimeError('can not determine Gecko MSI Filename, File "{path_appwiz}" does not exist'.format(path_appwiz=path_appwiz))
 
-    response = configmagick_linux.run_shell_command('strings -d --bytes=12 --encoding=s "{path_appwiz}" | fgrep "wine_gecko" | fgrep "x86_64.msi"'
-                                                    .format(path_appwiz=path_appwiz), shell=True, quiet=True)
-    gecko_64_filename = response.stdout
-    if not gecko_64_filename:
-        raise RuntimeError('can not determine Gecko 64 Bit MSI File Name for WINEPREFIX="{wine_prefix}"'.format(wine_prefix=wine_prefix))
+    try:
+        response = configmagick_linux.run_shell_command('strings -d --bytes=12 --encoding=s "{path_appwiz}" | fgrep "wine_gecko" | fgrep "x86_64.msi"'
+                                                        .format(path_appwiz=path_appwiz), shell=True, quiet=True)
+        gecko_64_filename = response.stdout
+    except (subprocess.CalledProcessError, RuntimeError):
+        # this happens on old wine versions, the wine_gecko-2.47-x86.msi is not present in the appwiz.cpl
+        lib_log_utils.log_warning('Can not determine Gecko Version from appwiz.cpl - assuming "wine_gecko-2.47-x86_64.msi"')
+        gecko_64_filename = 'wine_gecko-2.47-x86_64.msi'
+
     path_gecko_64_filename = pathlib.Path(gecko_64_filename)
     return path_gecko_64_filename

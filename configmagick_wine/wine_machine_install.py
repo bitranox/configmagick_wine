@@ -44,6 +44,10 @@ def install_wine_machine(wine_prefix: Union[str, pathlib.Path] = configmagick_li
     OK
     ...
 
+    >>> wine_install.install_winetricks()   # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+
+    >>> wine_install.update_winetricks()    # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+
     >>> install_wine_machine(wine_prefix='wine_test_32', \
         wine_arch='win32', overwrite_existing_wine_machine=True)
 

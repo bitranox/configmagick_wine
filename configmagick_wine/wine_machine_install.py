@@ -75,7 +75,7 @@ def install_wine_machine(wine_prefix: Union[str, pathlib.Path] = configmagick_li
 
     """
     wine_prefix = lib_wine.get_and_check_wine_prefix(wine_prefix, username)    # prepend /home/user if needed
-    wine_arch = lib_wine.get_wine_arch(wine_arch=wine_arch)
+    wine_arch = lib_wine.get_and_check_wine_arch_valid(wine_arch=wine_arch)
 
     lib_log_utils.banner_verbose('Installing Wine Machine:\n'
                                  'wine_prefix = "{wine_prefix}"\n'

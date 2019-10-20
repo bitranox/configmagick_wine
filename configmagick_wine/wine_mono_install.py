@@ -230,15 +230,16 @@ def get_wine_mono_download_link_from_github() -> str:
     >>> get_wine_mono_download_link_from_github()  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
     'https://github.com//madewokherd/wine-mono/releases/download/wine-mono-.../wine-mono-...msi'
     """
-    download_link = 'https://github.com/madewokherd/wine-mono/releases/latest'
     filename = configmagick_linux.get_path_home_dir_current_user() / 'mono-latest-release.html'
-    configmagick_linux.download_file(download_link=download_link, filename=filename)
-
-    link = configmagick_linux.run_shell_command('fgrep ".msi" "{filename}" | fgrep "wine-mono" | fgrep "href="'
-                                                .format(filename=filename), shell=True, quiet=True).stdout
-    link = link.split('href="', 1)[1]
-    link = 'https://github.com/' + link.split('"', 1)[0]
-    configmagick_linux.run_shell_command('rm -f "{filename}"'.format(filename=filename), shell=True, quiet=True)
+    try:
+        download_link = 'https://github.com/madewokherd/wine-mono/releases/latest'
+        configmagick_linux.download_file(download_link=download_link, filename=filename)
+        link = configmagick_linux.run_shell_command('fgrep ".msi" "{filename}" | fgrep "wine-mono" | fgrep "href="'
+                                                    .format(filename=filename), shell=True, quiet=True).stdout
+        link = link.split('href="', 1)[1]
+        link = 'https://github.com/' + link.split('"', 1)[0]
+    finally:
+        configmagick_linux.run_shell_command('rm -f "{filename}"'.format(filename=filename), shell=True, quiet=True)
     return str(link)
 
 

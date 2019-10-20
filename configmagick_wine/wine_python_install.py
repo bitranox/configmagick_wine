@@ -1,0 +1,197 @@
+# ### STDLIB
+import pathlib
+import subprocess
+from typing import Union
+
+# ### OWN
+import configmagick_linux
+import lib_log_utils
+
+# ####### PROJ
+try:
+    # imports for local pytest
+    from . import lib_wine              # type: ignore # pragma: no cover
+    from . import wine_install          # type: ignore # pragma: no cover
+    from . import wine_machine_install  # type: ignore # pragma: no cover
+except ImportError:                     # type: ignore # pragma: no cover
+    # imports for doctest
+    # noinspection PyUnresolvedReferences
+    import lib_wine                     # type: ignore # pragma: no cover
+    # noinspection PyUnresolvedReferences
+    import wine_install                 # type: ignore # pragma: no cover
+    # noinspection PyUnresolvedReferences
+    import wine_machine_install                 # type: ignore # pragma: no cover
+
+
+def install_wine_python(wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
+                        username: str = configmagick_linux.get_current_username(),
+                        python_version: str = 'latest') -> None:
+
+    """ install python on wine
+    """
+    wine_prefix = lib_wine.get_and_check_wine_prefix(wine_prefix, username)
+    wine_arch = lib_wine.get_wine_arch_from_wine_prefix(wine_prefix=wine_prefix, username=username)
+    if python_version == 'latest':
+        python_version = get_latest_python_version()
+    path_python_filename = get_path_python_filename(version=python_version, arch=wine_arch)
+    wine_cache_directory = lib_wine.get_path_wine_cache_for_user(username=username)
+    lib_log_utils.banner_verbose('Installing Python :\n'
+                                 'WINEPREFIX="{wine_prefix}"\n'
+                                 'WINEARCH="{wine_arch}"\n'
+                                 'python_filename="{path_python_filename}"\n'
+                                 'wine_cache_directory="{wine_cache_directory}"'
+                                 .format(wine_prefix=wine_prefix,
+                                         wine_arch=wine_arch,
+                                         wine_cache_directory=wine_cache_directory,
+                                         path_python_filename=path_python_filename))
+    download_python_file(python_version=python_version, wine_prefix=wine_prefix, username=username)
+
+    lib_log_utils.log_verbose('Install "{path_python_filename}" on WINEPREFIX="{wine_prefix}"'
+                              .format(path_python_filename=path_python_filename,
+                                      wine_prefix=wine_prefix))
+
+    command = 'runuser -l {username} -c \'WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" wine "{wine_cache_directory}/{path_python_filename}"'\
+              ' /quiet InstallAllUsers=1 PrependPath=1 Include_test=0\''\
+        .format(username=username,
+                wine_prefix=wine_prefix,
+                wine_arch=wine_arch,
+                wine_cache_directory=wine_cache_directory,
+                path_python_filename=path_python_filename)
+    configmagick_linux.run_shell_command(command, shell=True)
+    lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)  # it is cheap, just in case
+
+
+def get_latest_python_version() -> str:
+    """ get latest Python3 Version as String, or '3.8.0' if can not determined
+
+    Returns:
+         "3.8.0" or whatever is the latest Version Number
+
+    >>> version = get_latest_python_version()
+    >>> assert '.' in version
+    >>> assert get_latest_python_version().startswith('3')
+    """
+    # noinspection PyBroadException
+    filename = configmagick_linux.get_path_home_dir_current_user() / 'python-latest-release.html'
+    try:
+        download_link = 'https://www.python.org/downloads/windows/'
+        configmagick_linux.download_file(download_link=download_link, filename=filename)
+
+        s_version = configmagick_linux.run_shell_command('fgrep "Latest Python 3 Release" "{filename}" | fgrep "href="'
+                                                         .format(filename=filename), shell=True, quiet=True).stdout
+        # <li><a href="/downloads/release/python-380/">Latest Python 3 Release - Python 3.8.0</a></li>
+        s_version = s_version.rsplit('Latest Python 3 Release', 1)[1]    # - Python 3.8.0</a></li>
+        s_version = s_version.split('Python', 1)[1].strip()  # 3.8.0</a></li>
+        s_version = s_version.split('</a>', 1)[0].strip()  # 3.8.0
+    except Exception:
+        lib_log_utils.log_warning('can not determine latest Python Version, assuming Version 3.8.0')
+        s_version = '3.8.0'
+    finally:
+        configmagick_linux.run_shell_command('rm -f "{filename}"'.format(filename=filename), shell=True, quiet=True)
+    return str(s_version)
+
+
+def get_python_download_link(version: str, arch: str = 'win32') -> str:
+    """ get the download link for the python version by convention how the link should look alike
+    Parameter:
+        version = '3.8.0'
+        arch = 'win32' or 'win64'
+
+    >>> import unittest
+    >>> assert get_python_download_link(version='3.8.0', arch='win32') == 'https://www.python.org/ftp/python/3.8.0/python-3.8.0.exe'
+    >>> assert get_python_download_link(version='3.8.0', arch='win64') == 'https://www.python.org/ftp/python/3.8.0/python-3.8.0-amd64.exe'
+    >>> unittest.TestCase().assertRaises(RuntimeError, get_python_download_link, version='3.8.0', arch='invalid')
+    """
+    arch = lib_wine.get_and_check_wine_arch_valid(arch)
+    if arch == 'win32':
+        python_download_link = 'https://www.python.org/ftp/python/{version}/python-{version}.exe'.format(version=version)
+    else:
+        python_download_link = 'https://www.python.org/ftp/python/{version}/python-{version}-amd64.exe'.format(version=version)
+    return str(python_download_link)
+
+
+def get_python_backup_download_link(version: str, arch: str = 'win32') -> str:
+    """ get the download link for the python version from the webpage
+    Parameter:
+        version = '3.8.0'
+        arch = 'win32' or 'win64'
+
+    >>> import unittest
+    >>> assert get_python_backup_download_link(version='3.8.0', arch='win32') == 'https://www.python.org/ftp/python/3.8.0/python-3.8.0.exe'
+    >>> assert get_python_backup_download_link(version='3.8.0', arch='win64') == 'https://www.python.org/ftp/python/3.8.0/python-3.8.0-amd64.exe'
+    >>> unittest.TestCase().assertRaises(RuntimeError, get_python_backup_download_link, version='3.8.0', arch='invalid')    # invalid arch
+    >>> unittest.TestCase().assertRaises(RuntimeError, get_python_backup_download_link, version='3.1.9', arch='win32')      # invalid version
+
+    """
+    # noinspection PyBroadException
+    arch = lib_wine.get_and_check_wine_arch_valid(arch)
+    filename = configmagick_linux.get_path_home_dir_current_user() / 'python-latest-release.html'
+    path_python_filename = get_path_python_filename(version=version, arch=arch)
+    try:
+        download_link = 'https://www.python.org/downloads/windows/'
+        configmagick_linux.download_file(download_link=download_link, filename=filename)
+
+        python_backup_download_link = configmagick_linux.run_shell_command('fgrep "{path_python_filename}" "{filename}" | fgrep "href="'
+                                                                           .format(filename=filename, path_python_filename=path_python_filename),
+                                                                           shell=True, quiet=True).stdout
+        # <li>Download <a href="https://www.python.org/ftp/python/3.8.0/python-3.8.0-amd64.exe">Windows x86-64 executable installer</a></li>
+        python_backup_download_link = python_backup_download_link.split('<a href="')[1]
+        # https://www.python.org/ftp/python/3.8.0/python-3.8.0-amd64.exe">Windows x86-64 executable installer</a></li>
+        python_backup_download_link = python_backup_download_link.split('"')[0].strip()
+        # https://www.python.org/ftp/python/3.8.0/python-3.8.0-amd64.exe
+    except Exception:
+        raise RuntimeError('can not get Download Link for Python {path_python_filename}'.format(path_python_filename=path_python_filename))
+    finally:
+        configmagick_linux.run_shell_command('rm -f "{filename}"'.format(filename=filename), shell=True, quiet=True)
+    return str(python_backup_download_link)
+
+
+def get_path_python_filename(version: str, arch: str = 'win32') -> pathlib.Path:
+    """ get the filename of the .exe Setup File
+
+    >>> assert str(get_path_python_filename(version='3.8.0', arch='win32')) == 'python-3.8.0.exe'
+    >>> assert str(get_path_python_filename(version='3.8.0', arch='win64')) == 'python-3.8.0-amd64.exe'
+    """
+    arch = lib_wine.get_and_check_wine_arch_valid(arch)
+
+    if arch == 'win32':
+        path_python_filename = pathlib.Path('python-{version}.exe'.format(version=version))
+    else:
+        path_python_filename = pathlib.Path('python-{version}-amd64.exe'.format(version=version))
+    return path_python_filename
+
+
+def download_python_file(python_version: str, wine_prefix: Union[str, pathlib.Path], username: str, force_download: bool = False) -> None:
+    """ Downloads the Python Exe File to the WineCache directory
+
+    >>> wine_prefix = configmagick_linux.get_path_home_dir_current_user() / '.wine'
+    >>> username = configmagick_linux.get_current_username()
+    >>> wine_arch = lib_wine.get_wine_arch_from_wine_prefix(wine_prefix=wine_prefix, username=username)
+    >>> python_version = get_latest_python_version()
+    >>> path_python_filename = get_path_python_filename(version=python_version, arch=wine_arch)
+    >>> path_downloaded_file = pathlib.Path.home() / '.cache/wine' / path_python_filename
+    >>> if path_downloaded_file.is_file():
+    ...    path_downloaded_file.unlink()
+    >>> download_python_file(python_version=python_version, wine_prefix=wine_prefix, username=username, force_download=True)
+    >>> assert path_downloaded_file.is_file()
+    >>> download_python_file(python_version=python_version, wine_prefix=wine_prefix, username=username, force_download=False)
+    >>> assert path_downloaded_file.is_file()
+    """
+    wine_prefix = lib_wine.get_and_check_wine_prefix(wine_prefix, username)
+    wine_arch = lib_wine.get_wine_arch_from_wine_prefix(wine_prefix=wine_prefix, username=username)
+    python_download_link = get_python_download_link(version=python_version, arch=wine_arch)
+    python_backup_download_link = get_python_backup_download_link(version=python_version, arch=wine_arch)
+    path_python_filename = get_path_python_filename(version=python_version, arch=wine_arch)
+
+    if lib_wine.is_file_in_wine_cache(username=username, filename=path_python_filename) or force_download:
+        if force_download:
+            lib_wine.remove_file_from_winecache(filename=path_python_filename, username=username)
+            try:
+                lib_wine.download_file_to_winecache(download_link=python_download_link, filename=path_python_filename, username=username)
+            except subprocess.CalledProcessError:
+                lib_wine.download_file_to_winecache(download_link=python_backup_download_link, filename=path_python_filename, username=username)
+    else:
+        try:
+            lib_wine.download_file_to_winecache(download_link=python_download_link, filename=path_python_filename, username=username)
+        except subprocess.CalledProcessError:
+            lib_wine.download_file_to_winecache(download_link=python_backup_download_link, filename=path_python_filename, username=username)

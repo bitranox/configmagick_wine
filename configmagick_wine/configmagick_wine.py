@@ -27,13 +27,18 @@ import lib_log_utils
 
 try:
     # imports for local pytest
+    from . import lib_wine                  # type: ignore # pragma: no cover
+    from . import wine_gecko_install        # type: ignore # pragma: no cover
     from . import wine_install              # type: ignore # pragma: no cover
     from . import wine_machine_install      # type: ignore # pragma: no cover
     from . import wine_mono_install         # type: ignore # pragma: no cover
-    from . import wine_gecko_install        # type: ignore # pragma: no cover
-    from . import lib_wine                  # type: ignore # pragma: no cover
+    from . import wine_python_install       # type: ignore # pragma: no cover
 except ImportError:                         # type: ignore # pragma: no cover
     # imports for doctest
+    # noinspection PyUnresolvedReferences
+    import lib_wine                         # type: ignore # pragma: no cover
+    # noinspection PyUnresolvedReferences
+    import wine_gecko_install               # type: ignore # pragma: no cover
     # noinspection PyUnresolvedReferences
     import wine_install                     # type: ignore # pragma: no cover
     # noinspection PyUnresolvedReferences
@@ -41,9 +46,7 @@ except ImportError:                         # type: ignore # pragma: no cover
     # noinspection PyUnresolvedReferences
     import wine_mono_install                # type: ignore # pragma: no cover
     # noinspection PyUnresolvedReferences
-    import wine_gecko_install               # type: ignore # pragma: no cover
-    # noinspection PyUnresolvedReferences
-    import lib_wine                         # type: ignore # pragma: no cover
+    import wine_python_install              # type: ignore # pragma: no cover
 
 
 def main() -> None:
@@ -64,6 +67,7 @@ def main() -> None:
                 'install_wine_mono_latest': wine_mono_install.install_wine_mono_latest,
                 'install_wine_mono_recommended': wine_mono_install.install_wine_mono_recommended,
                 'install_wine_gecko': wine_gecko_install.install_wine_gecko,
+                'install_wine_python': wine_python_install.install_wine_python,
                 'fix_wine_permissions': lib_wine.fix_wine_permissions,
             })
 

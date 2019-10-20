@@ -33,16 +33,16 @@ def get_and_check_wine_prefix(wine_prefix: Union[str, pathlib.Path], username: s
     return wine_prefix
 
 
-def get_wine_arch(wine_arch: str = '') -> str:
+def get_and_check_wine_arch_valid(wine_arch: str = '') -> str:
     """
     check for valid winearch - if wine_arch is empty, default to win32
     valid choices: win32, win64
 
     >>> import unittest
-    >>> assert get_wine_arch() == 'win32'
-    >>> assert get_wine_arch('win32') == 'win32'
-    >>> assert get_wine_arch('win64') == 'win64'
-    >>> unittest.TestCase().assertRaises(RuntimeError, get_wine_arch, wine_arch='invalid')
+    >>> assert get_and_check_wine_arch_valid() == 'win32'
+    >>> assert get_and_check_wine_arch_valid('win32') == 'win32'
+    >>> assert get_and_check_wine_arch_valid('win64') == 'win64'
+    >>> unittest.TestCase().assertRaises(RuntimeError, get_and_check_wine_arch_valid, wine_arch='invalid')
     """
     valid_wine_archs = ['win32', 'win64']
     if not wine_arch:

@@ -16,7 +16,7 @@ def install_wine(wine_release: str, linux_release_name: str = configmagick_linux
 
     """
 
-    lib_log_utils.banner_verbose('Installing WINE and WINETRICKS: \n'
+    lib_log_utils.banner_verbose('Installing WINE: \n'
                                  'linux_release_name = "{linux_release_name}" \n'
                                  'wine_release = "{wine_release}" \n'
                                  .format(linux_release_name=linux_release_name, wine_release=wine_release)
@@ -27,6 +27,10 @@ def install_wine(wine_release: str, linux_release_name: str = configmagick_linux
     install_libfaudio0_if_needed()
     update_wine_packages()
     install_wine_packages(wine_release)
+    lib_log_utils.banner_success('Wine Installation OK - Wine Release: "{wine_release}", Wine Version: "{wine_version_number}"'
+                                 .format(wine_release=wine_release,
+                                         wine_version_number=get_wine_version_number())
+                                 )
 
 
 def raise_if_wine_release_unknown(wine_release: str) -> None:
@@ -89,10 +93,6 @@ def install_wine_packages(wine_release: str, reinstall: bool = False) -> None:
     configmagick_linux.install_linux_package('winehq-{wine_release}'.format(wine_release=wine_release),
                                              parameters=['--install-recommends'], reinstall=reinstall)
     configmagick_linux.install_linux_packages(['cabextract', 'libxml2', 'libpng-dev'], reinstall=reinstall)
-    lib_log_utils.log_success('Installed OK - Wine Release: "{wine_release}", Wine Version: "{wine_version_number}"'
-                              .format(wine_release=wine_release,
-                                      wine_version_number=get_wine_version_number())
-                              )
 
 
 def get_wine_version_number() -> str:
@@ -101,13 +101,15 @@ def get_wine_version_number() -> str:
 
 
 def install_winetricks() -> None:
-    lib_log_utils.log_verbose('Install Winetricks')
+    lib_log_utils.banner_verbose('Installing Winetricks')
     configmagick_linux.run_shell_command('rm -f /usr/bin/winetricks')
     configmagick_linux.run_shell_command(
         'wget -nv -c --directory-prefix=/usr/bin/ https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks')
     configmagick_linux.run_shell_command('chmod +x /usr/bin/winetricks')
+    lib_log_utils.banner_success('Winetricks Installation OK')
 
 
 def update_winetricks() -> None:
-    lib_log_utils.log_verbose('Update Winetricks')
+    lib_log_utils.banner_verbose('Updating Winetricks')
     configmagick_linux.run_shell_command('winetricks -q --self-update')
+    lib_log_utils.banner_success('Winetricks Update OK')

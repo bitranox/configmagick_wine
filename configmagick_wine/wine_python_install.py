@@ -60,7 +60,7 @@ def install_wine_python(wine_prefix: Union[str, pathlib.Path] = configmagick_lin
                 path_python_filename=path_python_filename,
                 display=configmagick_linux.get_env_display())
     configmagick_linux.run_shell_command(command, shell=True)
-    lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)  # it is cheap, just in case
+    lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)   # it is cheap, just in case
 
 
 def get_latest_python_version() -> str:

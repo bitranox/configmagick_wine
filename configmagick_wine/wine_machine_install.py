@@ -142,5 +142,7 @@ def delete_existing_wine_machine_or_raise(overwrite_existing_wine_machine: bool,
         if overwrite_existing_wine_machine:
             lib_log_utils.banner_warning('deleting old Wine Machine "{wine_prefix}"'.format(wine_prefix=wine_prefix))
             configmagick_linux.run_shell_command('rm -Rf "${wine_prefix}"'.format(wine_prefix=wine_prefix))
+            if wine_prefix.exists():
+                raise RuntimeError('the WINEPREFIX can not be deleted: "{wine_prefix}"'.format(wine_prefix=wine_prefix))
         else:
             raise RuntimeError('the WINEPREFIX does already exist, and overwrite is disabled: "{wine_prefix}"'.format(wine_prefix=wine_prefix))

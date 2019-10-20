@@ -128,11 +128,10 @@ def create_wine_machine(wine_prefix: pathlib.Path,
     configmagick_linux.run_shell_command('mkdir -p {wine_prefix}'.format(wine_prefix=wine_prefix))
     lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)
     # we really set DISPLAY to an empty value, otherwise Errors under XVFB
-    configmagick_linux.run_shell_command('runuser -l {username} -c \'DISPLAY="{display}" WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" winecfg\''
+    configmagick_linux.run_shell_command('runuser -l {username} -c \'DISPLAY="" WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" winecfg\''
                                          .format(username=username,
                                                  wine_prefix=wine_prefix,
-                                                 wine_arch=wine_arch,
-                                                 display=configmagick_linux.get_env_display()),
+                                                 wine_arch=wine_arch),
                                          shell=True)
     configmagick_linux.wait_for_file_to_be_created(filename=wine_prefix / 'system.reg')
     configmagick_linux.wait_for_file_to_be_unchanged(filename=wine_prefix / 'system.reg')

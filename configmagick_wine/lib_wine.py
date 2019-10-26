@@ -5,16 +5,19 @@ from typing import Union
 # ### OWN
 import configmagick_linux
 import lib_regexp
+import lib_shell
 
 
 def fix_wine_permissions(wine_prefix: Union[str, pathlib.Path], username: str) -> None:
     wine_prefix = get_and_check_wine_prefix(wine_prefix, username)    # prepend /home/user if needed
 
     if wine_prefix.exists():
-        configmagick_linux.run_shell_command('chown -R "{username}"."{username}" "{wine_prefix}"'
-                                             .format(username=username, wine_prefix=wine_prefix))
-        configmagick_linux.run_shell_command('chmod -R 0775 "{wine_prefix}"'
-                                             .format(wine_prefix=wine_prefix))
+        lib_shell.run_shell_command('chown -R "{username}"."{username}" "{wine_prefix}"'
+                                    .format(username=username, wine_prefix=wine_prefix),
+                                    quiet=True, use_sudo=True)
+        lib_shell.run_shell_command('chmod -R 0775 "{wine_prefix}"'
+                                    .format(wine_prefix=wine_prefix),
+                                    quiet=True, use_sudo=True)
     fix_permissions_winecache(username=username)
 
 
@@ -80,17 +83,20 @@ def get_path_wine_cache_for_user(username: str) -> pathlib.Path:
 def create_wine_cache_for_user(username: str) -> None:
     path_wine_cache = get_path_wine_cache_for_user(username=username)
     if not path_wine_cache.is_dir():
-        configmagick_linux.run_shell_command('mkdir -p {path_wine_cache}'.format(path_wine_cache=path_wine_cache))
+        lib_shell.run_shell_command('mkdir -p {path_wine_cache}'.format(path_wine_cache=path_wine_cache),
+                                    quiet=True, use_sudo=True)
     fix_permissions_winecache(username=username)
 
 
 def fix_permissions_winecache(username: str) -> None:
     path_wine_cache = get_path_wine_cache_for_user(username=username)
     if path_wine_cache.exists():
-        configmagick_linux.run_shell_command('chown -R "{username}"."{username}" "{path_wine_cache}"'
-                                             .format(username=username, path_wine_cache=path_wine_cache))
-        configmagick_linux.run_shell_command('chmod -R 0775 "{path_wine_cache}"'
-                                             .format(path_wine_cache=path_wine_cache))
+        lib_shell.run_shell_command('chown -R "{username}"."{username}" "{path_wine_cache}"'
+                                    .format(username=username, path_wine_cache=path_wine_cache),
+                                    quiet=True, use_sudo=True)
+        lib_shell.run_shell_command('chmod -R 0775 "{path_wine_cache}"'
+                                    .format(path_wine_cache=path_wine_cache),
+                                    quiet=True, use_sudo=True)
 
 
 def get_wine_arch_from_wine_prefix(wine_prefix: Union[str, pathlib.Path], username: str) -> str:
@@ -175,4 +181,5 @@ def remove_file_from_winecache(filename: pathlib.Path, username: str) -> None:
     create_wine_cache_for_user(username=username)
     path_wine_cache_file = get_path_wine_cache_for_user(username=username) / filename
     if path_wine_cache_file.exists():
-        configmagick_linux.run_shell_command('rm -f "{path_wine_cache_file}"'.format(path_wine_cache_file=path_wine_cache_file))
+        lib_shell.run_shell_command('rm -f "{path_wine_cache_file}"'.format(path_wine_cache_file=path_wine_cache_file),
+                                    quiet=True, use_sudo=True)

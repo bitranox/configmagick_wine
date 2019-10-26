@@ -14,6 +14,7 @@ required = ['fire',
             'configmagick_linux @ git+https://github.com/bitranox/configmagick_linux.git',
             'lib_log_utils @ git+https://github.com/bitranox/lib_log_utils.git',
             'lib_regexp @ git+https://github.com/bitranox/lib_regexp.git',
+            'lib_shell @ git+https://github.com/bitranox/lib_shell.git',
             ]                                                                                                   # type: List
 required_for_tests = list()                                                                                     # type: List
 # entry_points = {'console_scripts': ['configmagick_wine=configmagick_wine.configmagick_wine:main']}              # type: Dict

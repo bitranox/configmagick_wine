@@ -4,6 +4,7 @@ import subprocess
 # ### OWN
 import configmagick_linux
 import lib_log_utils
+import lib_shell
 
 
 def install_wine(wine_release: str, linux_release_name: str = configmagick_linux.get_linux_release_name()) -> None:
@@ -51,7 +52,7 @@ def raise_if_wine_release_unknown(wine_release: str) -> None:
 
 def add_architecture_386() -> None:
     lib_log_utils.log_verbose('Add 386 Architecture')
-    configmagick_linux.run_shell_command('dpkg --add-architecture i386')
+    lib_shell.run_shell_command('dpkg --add-architecture i386', use_sudo=True)
 
 
 def add_wine_key(linux_release_name: str) -> None:
@@ -61,12 +62,13 @@ def add_wine_key(linux_release_name: str) -> None:
     """
     lib_log_utils.log_verbose('Add Wine Key and Repository, linux_release_name="{linux_release_name}"'
                               .format(linux_release_name=linux_release_name))
-    configmagick_linux.run_shell_command('rm -f ./winehq.key*', shell=True)
-    configmagick_linux.run_shell_command('wget -nv -c https://dl.winehq.org/wine-builds/winehq.key')
-    configmagick_linux.run_shell_command('apt-key add winehq.key')
-    configmagick_linux.run_shell_command('rm -f ./winehq.key*', shell=True)
-    configmagick_linux.run_shell_command('apt-add-repository "deb https://dl.winehq.org/wine-builds/ubuntu/ {linux_release_name} main"'
-                                         .format(linux_release_name=linux_release_name))
+    lib_shell.run_shell_command('rm -f ./winehq.key*', shell=True, use_sudo=True)
+    lib_shell.run_shell_command('wget -nv -c https://dl.winehq.org/wine-builds/winehq.key', use_sudo=True)
+    lib_shell.run_shell_command('apt-key add winehq.key', use_sudo=True)
+    lib_shell.run_shell_command('rm -f ./winehq.key*', shell=True, use_sudo=True)
+    lib_shell.run_shell_command('apt-add-repository "deb https://dl.winehq.org/wine-builds/ubuntu/ {linux_release_name} main"'.format(
+        linux_release_name=linux_release_name),
+        use_sudo=True)
 
 
 def install_libfaudio0_if_needed() -> None:
@@ -80,7 +82,7 @@ def install_libfaudio0_if_needed() -> None:
 
 
 def install_libfaudio0_backport() -> None:
-    configmagick_linux.run_shell_command('add-apt-repository ppa:cybermax-dexter/sdl2-backport -y')
+    lib_shell.run_shell_command('add-apt-repository ppa:cybermax-dexter/sdl2-backport -y', use_sudo=True)
 
 
 def update_wine_packages() -> None:
@@ -96,20 +98,20 @@ def install_wine_packages(wine_release: str, reinstall: bool = False) -> None:
 
 
 def get_wine_version_number() -> str:
-    wine_version_number = configmagick_linux.run_shell_command('wine --version', quiet=True).stdout
+    wine_version_number = lib_shell.run_shell_command('wine --version', quiet=True).stdout
     return str(wine_version_number)
 
 
 def install_winetricks() -> None:
     lib_log_utils.banner_verbose('Installing Winetricks')
-    configmagick_linux.run_shell_command('rm -f /usr/bin/winetricks')
-    configmagick_linux.run_shell_command(
-        'wget -nv -c --directory-prefix=/usr/bin/ https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks')
-    configmagick_linux.run_shell_command('chmod +x /usr/bin/winetricks')
+    lib_shell.run_shell_command('rm -f /usr/bin/winetricks', use_sudo=True)
+    lib_shell.run_shell_command('wget -nv -c --directory-prefix=/usr/bin/ https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks',
+                                use_sudo=True)
+    lib_shell.run_shell_command('chmod +x /usr/bin/winetricks', use_sudo=True)
     lib_log_utils.banner_success('Winetricks Installation OK')
 
 
 def update_winetricks() -> None:
     lib_log_utils.banner_verbose('Updating Winetricks')
-    configmagick_linux.run_shell_command('winetricks -q --self-update')
+    lib_shell.run_shell_command('winetricks -q --self-update', use_sudo=True)
     lib_log_utils.banner_success('Winetricks Update OK')

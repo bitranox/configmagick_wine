@@ -6,6 +6,7 @@ from typing import Union
 # ### OWN
 import configmagick_linux
 import lib_log_utils
+import lib_shell
 
 # ####### PROJ
 try:
@@ -65,13 +66,12 @@ def install_wine_mono_latest(wine_prefix: Union[str, pathlib.Path] = configmagic
                               .format(mono_msi_filename=mono_msi_filename,
                                       wine_prefix=wine_prefix))
 
-    command = 'runuser -l {username} -c \'WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" wine msiexec /i "{wine_cache_directory}/{mono_msi_filename}"\''\
-        .format(username=username,
-                wine_prefix=wine_prefix,
+    command = 'WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" wine msiexec /i "{wine_cache_directory}/{mono_msi_filename}"'\
+        .format(wine_prefix=wine_prefix,
                 wine_arch=wine_arch,
                 wine_cache_directory=wine_cache_directory,
                 mono_msi_filename=mono_msi_filename)
-    configmagick_linux.run_shell_command(command, shell=True)
+    lib_shell.run_shell_command(command, shell=True, run_as_user=username)
     lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)  # it is cheap, just in case
 
 
@@ -113,14 +113,13 @@ def install_wine_mono_recommended(wine_prefix: Union[str, pathlib.Path] = config
 
     download_mono_msi_files(username=username, force_download=False)
 
-    command = 'runuser -l {username} -c \'WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" wine msiexec /i "{wine_cache_directory}/{mono_msi_filename}"\''\
-        .format(username=username,
-                wine_prefix=wine_prefix,
+    command = 'WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" wine msiexec /i "{wine_cache_directory}/{mono_msi_filename}"'\
+        .format(wine_prefix=wine_prefix,
                 wine_arch=wine_arch,
                 wine_cache_directory=wine_cache_directory,
                 mono_msi_filename=mono_msi_filename)
 
-    configmagick_linux.run_shell_command(command, shell=True)
+    lib_shell.run_shell_command(command, shell=True, run_as_user=username)
     lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)  # it is cheap, just in case
 
 
@@ -193,8 +192,8 @@ def get_mono_msi_filename_from_appwiz(wine_prefix: pathlib.Path, username: str) 
         raise RuntimeError('can not determine Mono MSI Filename, File "{path_appwiz}" does not exist'.format(path_appwiz=path_appwiz))
 
     # this fails from unknown reason on travis xenial !
-    response = configmagick_linux.run_shell_command('strings -d --bytes=12 --encoding=s "{path_appwiz}" | fgrep "wine-mono-" | fgrep ".msi"'
-                                                    .format(path_appwiz=path_appwiz), shell=True, quiet=True)
+    response = lib_shell.run_shell_command('strings -d --bytes=12 --encoding=s "{path_appwiz}" | fgrep "wine-mono-" | fgrep ".msi"'
+                                           .format(path_appwiz=path_appwiz), shell=True, quiet=True, use_sudo=True)
     mono_msi_filename = response.stdout
 
     if not mono_msi_filename:
@@ -234,12 +233,12 @@ def get_wine_mono_download_link_from_github() -> str:
     try:
         download_link = 'https://github.com/madewokherd/wine-mono/releases/latest'
         configmagick_linux.download_file(download_link=download_link, filename=filename)
-        link = configmagick_linux.run_shell_command('fgrep ".msi" "{filename}" | fgrep "wine-mono" | fgrep "href="'
-                                                    .format(filename=filename), shell=True, quiet=True).stdout
+        link = lib_shell.run_shell_command('fgrep ".msi" "{filename}" | fgrep "wine-mono" | fgrep "href="'
+                                           .format(filename=filename), shell=True, quiet=True, use_sudo=True).stdout
         link = link.split('href="', 1)[1]
         link = 'https://github.com/' + link.split('"', 1)[0]
     finally:
-        configmagick_linux.run_shell_command('rm -f "{filename}"'.format(filename=filename), shell=True, quiet=True)
+        lib_shell.run_shell_command('rm -f "{filename}"'.format(filename=filename), shell=True, quiet=True, use_sudo=True)
     return str(link)
 
 

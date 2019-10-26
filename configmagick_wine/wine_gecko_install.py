@@ -6,7 +6,7 @@ from typing import Union
 # ### OWN
 import configmagick_linux
 import lib_log_utils
-
+import lib_shell
 
 # ####### PROJ
 
@@ -76,14 +76,13 @@ def install_gecko_by_architecture(wine_prefix: Union[str, pathlib.Path], usernam
     path_wine_cache = lib_wine.get_path_wine_cache_for_user(username)
     wine_arch = lib_wine.get_wine_arch_from_wine_prefix(wine_prefix, username)
 
-    command = 'runuser -l {username} -c \'WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" wine msiexec /i "{path_wine_cache}/{path_gecko_msi_filename}"\''\
-        .format(username=username,
-                wine_prefix=wine_prefix,
-                wine_arch=wine_arch,
-                path_wine_cache=path_wine_cache,
-                path_gecko_msi_filename=path_gecko_msi_filename
-                )
-    configmagick_linux.run_shell_command(command, shell=True)
+    command = 'WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" wine msiexec /i "{path_wine_cache}/{path_gecko_msi_filename}"'.format(
+        wine_prefix=wine_prefix,
+        wine_arch=wine_arch,
+        path_wine_cache=path_wine_cache,
+        path_gecko_msi_filename=path_gecko_msi_filename)
+
+    lib_shell.run_shell_command(command, shell=True, run_as_user=username)
 
 
 def download_gecko_msi_files(wine_prefix: Union[str, pathlib.Path], username: str) -> None:
@@ -198,8 +197,8 @@ def get_gecko_32_filename_from_appwiz(wine_prefix: Union[str, pathlib.Path], use
         raise RuntimeError('can not determine Gecko MSI Filename, File "{path_appwiz}" does not exist'.format(path_appwiz=path_appwiz))
 
     try:
-        response = configmagick_linux.run_shell_command('strings -d --bytes=12 --encoding=s "{path_appwiz}" | fgrep "wine_gecko-" | fgrep "x86.msi"'
-                                                        .format(path_appwiz=path_appwiz), shell=True, quiet=True)
+        response = lib_shell.run_shell_command('strings -d --bytes=12 --encoding=s "{path_appwiz}" | fgrep "wine_gecko-" | fgrep "x86.msi"'
+                                               .format(path_appwiz=path_appwiz), shell=True, quiet=True, use_sudo=True)
         gecko_32_filename = response.stdout
     except (subprocess.CalledProcessError, RuntimeError):
         # this happens on old wine versions, the wine_gecko-2.47-x86.msi is not present in the appwiz.cpl
@@ -242,8 +241,8 @@ def get_gecko_64_filename_from_appwiz(wine_prefix: Union[str, pathlib.Path], use
         raise RuntimeError('can not determine Gecko MSI Filename, File "{path_appwiz}" does not exist'.format(path_appwiz=path_appwiz))
 
     try:
-        response = configmagick_linux.run_shell_command('strings -d --bytes=12 --encoding=s "{path_appwiz}" | fgrep "wine_gecko" | fgrep "x86_64.msi"'
-                                                        .format(path_appwiz=path_appwiz), shell=True, quiet=True)
+        response = lib_shell.run_shell_command('strings -d --bytes=12 --encoding=s "{path_appwiz}" | fgrep "wine_gecko" | fgrep "x86_64.msi"'
+                                               .format(path_appwiz=path_appwiz), shell=True, quiet=True, use_sudo=True)
         gecko_64_filename = response.stdout
     except (subprocess.CalledProcessError, RuntimeError):
         # this happens on old wine versions, the wine_gecko-2.47-x86.msi is not present in the appwiz.cpl

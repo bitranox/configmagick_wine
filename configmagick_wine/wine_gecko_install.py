@@ -31,7 +31,7 @@ def install_wine_gecko(wine_prefix: Union[str, pathlib.Path] = configmagick_linu
     install 32 Bit Gecko for 32/64 Bit Wine, and 64 Bit Gecko for 64 Bit Wine
 
     >>> wine_install.install_wine(wine_release='staging')  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-    OK
+    OK...
     ...
     >>> wine_machine_install.install_wine_machine(wine_prefix='wine_test_32',wine_arch='win32',\
                                                   overwrite_existing_wine_machine=True)
@@ -41,10 +41,10 @@ def install_wine_gecko(wine_prefix: Union[str, pathlib.Path] = configmagick_linu
 
     >>> username = configmagick_linux.get_current_username()
     >>> wine_prefix = lib_wine.get_and_check_wine_prefix('wine_test_32', username=username)
-    >>> install_wine_gecko('wine_test_32', username=username)
+    >>> install_wine_gecko(wine_prefix='wine_test_32', username=username)
 
     >>> wine_prefix = lib_wine.get_and_check_wine_prefix('wine_test_64', username=username)
-    >>> install_wine_gecko('wine_test_64', username=username)
+    >>> install_wine_gecko(wine_prefix='wine_test_64', username=username)
     """
     lib_log_utils.banner_verbose('Install Gecko on WINEPREFIX="{wine_prefix}"'.format(wine_prefix=wine_prefix))
     wine_prefix = lib_wine.get_and_check_wine_prefix(wine_prefix, username)    # prepend /home/user if needed
@@ -82,7 +82,7 @@ def install_gecko_by_architecture(wine_prefix: Union[str, pathlib.Path], usernam
         path_wine_cache=path_wine_cache,
         path_gecko_msi_filename=path_gecko_msi_filename)
 
-    lib_shell.run_shell_command(command, shell=True, run_as_user=username)
+    lib_shell.run_shell_command(command, shell=True, run_as_user=username, pass_stdout_stderr_to_sys=True)
 
 
 def download_gecko_msi_files(wine_prefix: Union[str, pathlib.Path], username: str) -> None:
@@ -92,6 +92,7 @@ def download_gecko_msi_files(wine_prefix: Union[str, pathlib.Path], username: st
         download_gecko_32_msi_files(wine_prefix, username)
     if wine_arch == 'win64':
         download_gecko_64_msi_files(wine_prefix, username)
+    lib_wine.fix_permissions_winecache(username=username)
 
 
 def download_gecko_32_msi_files(wine_prefix: Union[str, pathlib.Path], username: str) -> None:
@@ -100,9 +101,9 @@ def download_gecko_32_msi_files(wine_prefix: Union[str, pathlib.Path], username:
     gecko_download_link = get_gecko_download_link(path_gecko_32_msi_filename)
     gecko_backup_download_link = get_gecko_backup_download_link(path_gecko_32_msi_filename)
     try:
-        configmagick_linux.download_file(gecko_download_link, path_wine_cache_directory / path_gecko_32_msi_filename)
+        configmagick_linux.download_file(gecko_download_link, path_wine_cache_directory / path_gecko_32_msi_filename, use_sudo=True)
     except subprocess.CalledProcessError:
-        configmagick_linux.download_file(gecko_backup_download_link, path_wine_cache_directory / path_gecko_32_msi_filename)
+        configmagick_linux.download_file(gecko_backup_download_link, path_wine_cache_directory / path_gecko_32_msi_filename, use_sudo=True)
 
 
 def download_gecko_64_msi_files(wine_prefix: Union[str, pathlib.Path], username: str) -> None:
@@ -111,9 +112,9 @@ def download_gecko_64_msi_files(wine_prefix: Union[str, pathlib.Path], username:
     gecko_download_link = get_gecko_download_link(path_gecko_64_msi_filename)
     gecko_backup_download_link = get_gecko_backup_download_link(path_gecko_64_msi_filename)
     try:
-        configmagick_linux.download_file(gecko_download_link, path_wine_cache_directory / path_gecko_64_msi_filename)
+        configmagick_linux.download_file(gecko_download_link, path_wine_cache_directory / path_gecko_64_msi_filename, use_sudo=True)
     except subprocess.CalledProcessError:
-        configmagick_linux.download_file(gecko_backup_download_link, path_wine_cache_directory / path_gecko_64_msi_filename)
+        configmagick_linux.download_file(gecko_backup_download_link, path_wine_cache_directory / path_gecko_64_msi_filename, use_sudo=True)
 
 
 def get_gecko_download_link(path_gecko_msi_filename: Union[str, pathlib.Path]) -> str:
@@ -171,7 +172,7 @@ def get_gecko_arch_from_path_gecko_msi_filename(path_gecko_msi_filename: Union[s
 def get_gecko_32_filename_from_appwiz(wine_prefix: Union[str, pathlib.Path], username: str) -> pathlib.Path:
     """
     >>> wine_install.install_wine(wine_release='staging')  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-    OK
+    OK...
     ...
     >>> wine_machine_install.install_wine_machine(wine_prefix='wine_test_32',wine_arch='win32',\
                                                   overwrite_existing_wine_machine=True)
@@ -215,7 +216,7 @@ def get_gecko_64_filename_from_appwiz(wine_prefix: Union[str, pathlib.Path], use
 
     >>> import unittest
     >>> wine_install.install_wine(wine_release='staging')  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-    OK
+    OK...
     ...
     >>> wine_machine_install.install_wine_machine(wine_prefix='wine_test_32',wine_arch='win32',\
                                                   overwrite_existing_wine_machine=True)

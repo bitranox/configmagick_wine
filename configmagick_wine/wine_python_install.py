@@ -60,7 +60,7 @@ def install_wine_python(wine_prefix: Union[str, pathlib.Path] = configmagick_lin
                 wine_cache_directory=wine_cache_directory,
                 path_python_filename=path_python_filename,
                 display=configmagick_linux.get_env_display())
-    lib_shell.run_shell_command(command, shell=True, run_as_user=username)
+    lib_shell.run_shell_command(command, shell=True, run_as_user=username, pass_stdout_stderr_to_sys=True)
     lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)   # it is cheap, just in case
 
 
@@ -167,7 +167,7 @@ def get_path_python_filename(version: str, arch: str = 'win32') -> pathlib.Path:
 def download_python_file(python_version: str, wine_prefix: Union[str, pathlib.Path], username: str, force_download: bool = False) -> None:
     """ Downloads the Python Exe File to the WineCache directory
 
-    >>> wine_prefix = configmagick_linux.get_path_home_dir_current_user() / '.wine'
+    >>> wine_prefix = configmagick_linux.get_path_home_dir_current_user() / 'wine_test_32'
     >>> username = configmagick_linux.get_current_username()
     >>> wine_arch = lib_wine.get_wine_arch_from_wine_prefix(wine_prefix=wine_prefix, username=username)
     >>> python_version = get_latest_python_version()
@@ -179,6 +179,20 @@ def download_python_file(python_version: str, wine_prefix: Union[str, pathlib.Pa
     >>> assert path_downloaded_file.is_file()
     >>> download_python_file(python_version=python_version, wine_prefix=wine_prefix, username=username, force_download=False)
     >>> assert path_downloaded_file.is_file()
+
+    >>> wine_prefix = configmagick_linux.get_path_home_dir_current_user() / 'wine_test_64'
+    >>> username = configmagick_linux.get_current_username()
+    >>> wine_arch = lib_wine.get_wine_arch_from_wine_prefix(wine_prefix=wine_prefix, username=username)
+    >>> python_version = get_latest_python_version()
+    >>> path_python_filename = get_path_python_filename(version=python_version, arch=wine_arch)
+    >>> path_downloaded_file = pathlib.Path.home() / '.cache/wine' / path_python_filename
+    >>> if path_downloaded_file.is_file():
+    ...    path_downloaded_file.unlink()
+    >>> download_python_file(python_version=python_version, wine_prefix=wine_prefix, username=username, force_download=True)
+    >>> assert path_downloaded_file.is_file()
+    >>> download_python_file(python_version=python_version, wine_prefix=wine_prefix, username=username, force_download=False)
+    >>> assert path_downloaded_file.is_file()
+
     """
     wine_prefix = lib_wine.get_and_check_wine_prefix(wine_prefix, username)
     wine_arch = lib_wine.get_wine_arch_from_wine_prefix(wine_prefix=wine_prefix, username=username)

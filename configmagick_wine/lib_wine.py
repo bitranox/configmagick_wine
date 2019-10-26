@@ -30,8 +30,12 @@ def get_and_check_wine_prefix(wine_prefix: Union[str, pathlib.Path], username: s
 
     """
     wine_prefix = pathlib.Path(wine_prefix)                 # if wine_prefix is passed as string
-    if not str(wine_prefix).startswith('/home/'):
-        wine_prefix = pathlib.Path('/home/{username}'.format(username=username)) / str(wine_prefix)
+    if username == 'root':
+        if not str(wine_prefix).startswith('/root/'):
+            wine_prefix = pathlib.Path('/root') / str(wine_prefix)
+    else:
+        if not str(wine_prefix).startswith('/home/'):
+            wine_prefix = pathlib.Path('/home/{username}'.format(username=username)) / str(wine_prefix)
     raise_if_wine_prefix_does_not_match_user_homedir(wine_prefix=wine_prefix, username=username)
     return wine_prefix
 
@@ -147,9 +151,13 @@ def raise_if_wine_prefix_does_not_match_user_homedir(wine_prefix: Union[str, pat
     >>> unittest.TestCase().assertRaises(RuntimeError, raise_if_wine_prefix_does_not_match_user_homedir, wine_prefix='/home/test/wine', username='xxx')
 
     """
-    if not str(wine_prefix).startswith('/home/{username}/'.format(username=username)):
-        raise RuntimeError('wine_prefix "{wine_prefix}" is not within user home directory "/home/{username}"'.format(
-            wine_prefix=wine_prefix, username=username))
+    if username == 'root':
+        if not str(wine_prefix).startswith('/root/'):
+            raise RuntimeError('wine_prefix "{wine_prefix}" is not within user home directory "/root"'.format(wine_prefix=wine_prefix))
+    else:
+        if not str(wine_prefix).startswith('/home/{username}/'.format(username=username)):
+            raise RuntimeError('wine_prefix "{wine_prefix}" is not within user home directory "/home/{username}"'.format(
+                wine_prefix=wine_prefix, username=username))
 
 
 def is_file_in_wine_cache(username: str, filename: pathlib.Path) -> bool:

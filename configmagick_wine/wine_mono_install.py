@@ -30,7 +30,7 @@ def install_wine_mono_latest(wine_prefix: Union[str, pathlib.Path] = configmagic
     install the latest mono version from github
 
     >>> wine_install.install_wine(wine_release='staging')  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-    OK
+    OK...
     ...
     >>> wine_machine_install.install_wine_machine(wine_prefix='wine_test_32',wine_arch='win32',\
                                                   overwrite_existing_wine_machine=True)
@@ -71,7 +71,7 @@ def install_wine_mono_latest(wine_prefix: Union[str, pathlib.Path] = configmagic
                 wine_arch=wine_arch,
                 wine_cache_directory=wine_cache_directory,
                 mono_msi_filename=mono_msi_filename)
-    lib_shell.run_shell_command(command, shell=True, run_as_user=username)
+    lib_shell.run_shell_command(command, shell=True, run_as_user=username, pass_stdout_stderr_to_sys=True)
     lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)  # it is cheap, just in case
 
 
@@ -82,7 +82,7 @@ def install_wine_mono_recommended(wine_prefix: Union[str, pathlib.Path] = config
 
 
     >>> wine_install.install_wine(wine_release='staging')  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-    OK
+    OK...
     ...
     >>> wine_machine_install.install_wine_machine(wine_prefix='wine_test_32',wine_arch='win32',\
                                                   overwrite_existing_wine_machine=True)
@@ -119,7 +119,7 @@ def install_wine_mono_recommended(wine_prefix: Union[str, pathlib.Path] = config
                 wine_cache_directory=wine_cache_directory,
                 mono_msi_filename=mono_msi_filename)
 
-    lib_shell.run_shell_command(command, shell=True, run_as_user=username)
+    lib_shell.run_shell_command(command, shell=True, run_as_user=username, pass_stdout_stderr_to_sys=True)
     lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)  # it is cheap, just in case
 
 
@@ -165,9 +165,6 @@ def download_mono_msi_files_appwiz(wine_prefix: Union[str, pathlib.Path], userna
 
 def get_mono_msi_filename_from_appwiz(wine_prefix: pathlib.Path, username: str) -> pathlib.Path:
     """
-    >>> wine_install.install_wine(wine_release='staging')  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-    OK
-    ...
     >>> wine_machine_install.install_wine_machine(wine_prefix='wine_test_32',wine_arch='win32',\
                                                   overwrite_existing_wine_machine=True)
 

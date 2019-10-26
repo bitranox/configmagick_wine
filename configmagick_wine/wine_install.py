@@ -52,12 +52,12 @@ def raise_if_wine_release_unknown(wine_release: str) -> None:
 
 def add_architecture_386() -> None:
     lib_log_utils.log_verbose('Add 386 Architecture')
-    lib_shell.run_shell_command('dpkg --add-architecture i386', use_sudo=True)
+    lib_shell.run_shell_command('dpkg --add-architecture i386', use_sudo=True, pass_stdout_stderr_to_sys=True)
 
 
-def add_wine_key(linux_release_name: str) -> None:
+def add_wine_key(linux_release_name: str, pass_output: bool = True) -> None:
     """
-    >>> # add_wine_key(configmagick_linux.get_linux_release_name())
+    >>> add_wine_key(configmagick_linux.get_linux_release_name(), pass_output=False)
 
     """
     lib_log_utils.log_verbose('Add Wine Key and Repository, linux_release_name="{linux_release_name}"'
@@ -68,7 +68,8 @@ def add_wine_key(linux_release_name: str) -> None:
     lib_shell.run_shell_command('rm -f ./winehq.key*', shell=True, use_sudo=True)
     lib_shell.run_shell_command('apt-add-repository "deb https://dl.winehq.org/wine-builds/ubuntu/ {linux_release_name} main"'.format(
         linux_release_name=linux_release_name),
-        use_sudo=True)
+        use_sudo=True,
+        pass_stdout_stderr_to_sys=pass_output)
 
 
 def install_libfaudio0_if_needed() -> None:

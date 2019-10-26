@@ -39,13 +39,11 @@ def install_wine_machine(wine_prefix: Union[str, pathlib.Path] = configmagick_li
         --wine_prefix=/home/username/<prefix>   --> /home/username/<prefix>
         --overwrite_existing_wine_machine
 
-    >>> wine_install.install_wine(wine_release='staging')   # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-    OK
+    >>> wine_install.install_wine(wine_release='staging')  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+    OK...
     ...
     >>> wine_install.install_winetricks()
-    >>> wine_install.update_winetricks()    # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-    Executing ...
-    ...
+    >>> wine_install.update_winetricks()
     >>> install_wine_machine(wine_prefix='wine_test_32', \
         wine_arch='win32', overwrite_existing_wine_machine=True)
 
@@ -94,12 +92,23 @@ def install_wine_machine(wine_prefix: Union[str, pathlib.Path] = configmagick_li
 
 def disable_gui_crash_dialogs(wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
                               username: str = configmagick_linux.get_current_username()) -> None:
+    """
+    >>> disable_gui_crash_dialogs(wine_prefix='wine_test_32')       # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+    Using winetricks...
+    ...
+
+    >>> disable_gui_crash_dialogs(wine_prefix='wine_test_64')       # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+    ---...
+    You are using a 64-bit WINEPREFIX. ...
+    ...
+
+    """
     wine_prefix = lib_wine.get_and_check_wine_prefix(wine_prefix, username)    # prepend /home/user if needed
     wine_arch = lib_wine.get_wine_arch_from_wine_prefix(wine_prefix=wine_prefix, username=username)
     lib_log_utils.banner_verbose('Disable GUI Crash Dialogs on WINEPREFIX="{wine_prefix}", WINEARCH="{wine_arch}"'
                                  .format(wine_prefix=wine_prefix, wine_arch=wine_arch))
     lib_shell.run_shell_command('WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" winetricks nocrashdialog'
-                                .format(wine_prefix=wine_prefix, wine_arch=wine_arch), run_as_user=username)
+                                .format(wine_prefix=wine_prefix, wine_arch=wine_arch), run_as_user=username, shell=True, pass_stdout_stderr_to_sys=True)
     lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)  # it is cheap, just in case
 
 
@@ -113,7 +122,8 @@ def set_windows_version(windows_version: str = 'win7',
                                  .format(wine_prefix=wine_prefix, windows_version=windows_version))
     wine_arch = lib_wine.get_wine_arch_from_wine_prefix(wine_prefix=wine_prefix, username=username)
     lib_shell.run_shell_command('WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" winetricks -q "{windows_version}"'
-                                .format(wine_prefix=wine_prefix, wine_arch=wine_arch, windows_version=windows_version), run_as_user=username)
+                                .format(wine_prefix=wine_prefix, wine_arch=wine_arch, windows_version=windows_version),
+                                run_as_user=username, shell=True, pass_stdout_stderr_to_sys=True)
     lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)  # it is cheap, just in case
 
 
@@ -129,7 +139,8 @@ def create_wine_machine(wine_prefix: pathlib.Path,
     # we really set DISPLAY to an empty value, otherwise Errors under XVFB
     lib_shell.run_shell_command('DISPLAY="" WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" winecfg'
                                 .format(wine_prefix=wine_prefix, wine_arch=wine_arch),
-                                shell=True, run_as_user=username)
+                                shell=True, run_as_user=username,
+                                pass_stdout_stderr_to_sys=True)
     configmagick_linux.wait_for_file_to_be_created(filename=wine_prefix / 'system.reg')
     configmagick_linux.wait_for_file_to_be_unchanged(filename=wine_prefix / 'system.reg')
     lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)

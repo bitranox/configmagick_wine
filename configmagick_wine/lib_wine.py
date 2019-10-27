@@ -21,7 +21,8 @@ def fix_wine_permissions(wine_prefix: Union[str, pathlib.Path], username: str) -
     fix_permissions_winecache(username=username)
 
 
-def get_and_check_wine_prefix(wine_prefix: Union[str, pathlib.Path], username: str) -> pathlib.Path:
+def get_and_check_wine_prefix(wine_prefix: Union[str, pathlib.Path],
+                              username: str = configmagick_linux.get_current_username()) -> pathlib.Path:
     """
     if wine_prefix does not start with /home/ then prepend /home/<username>/
 
@@ -87,8 +88,7 @@ def get_path_wine_cache_for_user(username: str) -> pathlib.Path:
 def create_wine_cache_for_user(username: str) -> None:
     path_wine_cache = get_path_wine_cache_for_user(username=username)
     if not path_wine_cache.is_dir():
-        lib_shell.run_shell_command('mkdir -p {path_wine_cache}'.format(path_wine_cache=path_wine_cache),
-                                    quiet=True, use_sudo=True)
+        lib_shell.run_shell_command('mkdir -p {path_wine_cache}'.format(path_wine_cache=path_wine_cache), quiet=True, use_sudo=True)
     fix_permissions_winecache(username=username)
 
 
@@ -132,16 +132,20 @@ def get_and_check_path_wine_system_registry(wine_prefix: pathlib.Path) -> pathli
     return path_wine_system_registry
 
 
-def raise_if_path_outside_homedir(wine_prefix: Union[str, pathlib.Path]) -> None:
+def raise_if_path_outside_homedir(wine_prefix: Union[str, pathlib.Path], username: str) -> None:
     """
     >>> import unittest
-    >>> assert raise_if_path_outside_homedir(wine_prefix='/home/test') is None
-    >>> unittest.TestCase().assertRaises(RuntimeError, raise_if_path_outside_homedir, wine_prefix='/test')
+    >>> username = configmagick_linux.get_current_username()
+    >>> path_user_home = configmagick_linux.get_path_home_dir_user(username=username)
+    >>> assert raise_if_path_outside_homedir(wine_prefix=path_user_home / 'test', username=username) is None
+    >>> unittest.TestCase().assertRaises(RuntimeError, raise_if_path_outside_homedir, wine_prefix='/test', username=username)
 
     """
     wine_prefix = pathlib.Path(wine_prefix)                 # if wine_prefix is passed as string
-    if not str(wine_prefix).startswith('/home/'):
-        raise RuntimeError('the WINEPREFIX does not reside under /HOME: "{wine_prefix}"'.format(wine_prefix=wine_prefix))
+    path_user_home = configmagick_linux.get_path_home_dir_user(username=username)
+    if not str(wine_prefix).startswith(str(path_user_home)):
+        raise RuntimeError('the WINEPREFIX does not reside under {path_user_home}: "{wine_prefix}"'
+                           .format(path_user_home=path_user_home, wine_prefix=wine_prefix))
 
 
 def raise_if_wine_prefix_does_not_match_user_homedir(wine_prefix: Union[str, pathlib.Path], username: str) -> None:

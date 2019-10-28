@@ -239,8 +239,8 @@ install:
     - if [[ ${CMDPREFIX} == "wine" ]]; then configmagick_wine install_wine_mono_latest --wine_prefix=${WINEPREFIX}; fi
     - if [[ ${CMDPREFIX} == "wine" ]]; then configmagick_wine install_wine_gecko --wine_prefix=${WINEPREFIX}; fi
     - if [[ ${CMDPREFIX} == "wine" ]]; then configmagick_wine set_windows_version --windows_version=${wine_windows_version} --wine_prefix=${WINEPREFIX}; fi
+    - if [[ ${CMDPREFIX} == "wine" ]]; then configmagick_wine install_wine_python --wine_prefix=${WINEPREFIX}; fi
 
-    - if [[ ${wine_python_version} == "python3" ]]; then ${lib_bash_wine}/003_000_install_wine_python3_preinstalled.sh ; fi
     - if [[ ${CMDPREFIX} == "wine" ]]; then ${lib_bash_wine}/004_000_install_wine_git_portable.sh ; fi
     - if [[ ${CMDPREFIX} == "wine" ]]; then ${lib_bash_wine}/005_000_install_wine_powershell_core.sh ; fi
 

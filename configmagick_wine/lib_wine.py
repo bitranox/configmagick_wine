@@ -79,20 +79,20 @@ def get_windows_version(windows_version: str = 'win7') -> str:
     return windows_version
 
 
-def get_path_wine_cache_for_user(username: str) -> pathlib.Path:
+def get_path_wine_cache_for_user(username: str = configmagick_linux.get_current_username()) -> pathlib.Path:
     path_user_home = configmagick_linux.get_path_home_dir_user(username=username)
     path_wine_cache = path_user_home / '.cache/wine'
     return pathlib.Path(path_wine_cache)
 
 
-def create_wine_cache_for_user(username: str) -> None:
+def create_wine_cache_for_user(username: str = configmagick_linux.get_current_username()) -> None:
     path_wine_cache = get_path_wine_cache_for_user(username=username)
     if not path_wine_cache.is_dir():
         lib_shell.run_shell_command('mkdir -p {path_wine_cache}'.format(path_wine_cache=path_wine_cache), quiet=True, use_sudo=True)
     fix_permissions_winecache(username=username)
 
 
-def fix_permissions_winecache(username: str) -> None:
+def fix_permissions_winecache(username: str = configmagick_linux.get_current_username()) -> None:
     path_wine_cache = get_path_wine_cache_for_user(username=username)
     if path_wine_cache.exists():
         lib_shell.run_shell_command('chown -R "{username}"."{username}" "{path_wine_cache}"'
@@ -103,7 +103,8 @@ def fix_permissions_winecache(username: str) -> None:
                                     quiet=True, use_sudo=True)
 
 
-def get_wine_arch_from_wine_prefix(wine_prefix: Union[str, pathlib.Path], username: str) -> str:
+def get_wine_arch_from_wine_prefix(wine_prefix: Union[str, pathlib.Path],
+                                   username: str = configmagick_linux.get_current_username()) -> str:
     l_valid_wine_archs = ['win32', 'win64']
     wine_prefix = get_and_check_wine_prefix(wine_prefix=wine_prefix, username=username)
     path_wine_system_registry = get_and_check_path_wine_system_registry(wine_prefix=wine_prefix)
@@ -132,7 +133,8 @@ def get_and_check_path_wine_system_registry(wine_prefix: pathlib.Path) -> pathli
     return path_wine_system_registry
 
 
-def raise_if_path_outside_homedir(wine_prefix: Union[str, pathlib.Path], username: str) -> None:
+def raise_if_path_outside_homedir(wine_prefix: Union[str, pathlib.Path],
+                                  username: str = configmagick_linux.get_current_username()) -> None:
     """
     >>> import unittest
     >>> username = configmagick_linux.get_current_username()
@@ -148,7 +150,8 @@ def raise_if_path_outside_homedir(wine_prefix: Union[str, pathlib.Path], usernam
                            .format(path_user_home=path_user_home, wine_prefix=wine_prefix))
 
 
-def raise_if_wine_prefix_does_not_match_user_homedir(wine_prefix: Union[str, pathlib.Path], username: str) -> None:
+def raise_if_wine_prefix_does_not_match_user_homedir(wine_prefix: Union[str, pathlib.Path],
+                                                     username: str = configmagick_linux.get_current_username()) -> None:
     """
     >>> import unittest
     >>> assert raise_if_wine_prefix_does_not_match_user_homedir(wine_prefix='/home/test/wine', username='test') is None
@@ -164,7 +167,8 @@ def raise_if_wine_prefix_does_not_match_user_homedir(wine_prefix: Union[str, pat
                 wine_prefix=wine_prefix, username=username))
 
 
-def is_file_in_wine_cache(username: str, filename: pathlib.Path) -> bool:
+def is_file_in_wine_cache(filename: pathlib.Path,
+                          username: str = configmagick_linux.get_current_username()) -> bool:
     path_wine_cache = get_path_wine_cache_for_user(username=username)
     path_file = path_wine_cache / filename
     if path_file.is_file():

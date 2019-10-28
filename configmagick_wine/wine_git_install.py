@@ -35,7 +35,7 @@ def install_wine_git(wine_prefix: Union[str, pathlib.Path] = configmagick_linux.
     >>> install_wine_git(wine_prefix='wine_test_64', quiet=True)
 
     """
-    configmagick_linux.install_linux_package('p7zip', quiet=quiet)
+    configmagick_linux.install_linux_package('p7zip-full', quiet=quiet)
     wine_prefix = lib_wine.get_and_check_wine_prefix(wine_prefix, username)
     wine_arch = lib_wine.get_wine_arch_from_wine_prefix(wine_prefix=wine_prefix, username=username)
     wine_cache_directory = lib_wine.get_path_wine_cache_for_user(username=username)

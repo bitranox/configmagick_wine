@@ -265,7 +265,6 @@ def set_wine_registry_path(path: str,
     >>> set_wine_registry_path(path=old_path, wine_prefix='wine_test_32')
     >>> restored_path = get_wine_registry_path(wine_prefix='wine_test_32')
     >>> assert restored_path == old_path
-
     """
     wine_prefix = get_and_check_wine_prefix(wine_prefix=wine_prefix, username=username)
     write_wine_registry_data(reg_key='HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment',

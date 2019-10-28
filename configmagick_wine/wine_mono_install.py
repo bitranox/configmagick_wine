@@ -146,7 +146,6 @@ def get_mono_msi_filename_from_appwiz(wine_prefix: Union[str, pathlib.Path],
                                       username: str = configmagick_linux.get_current_username()) -> pathlib.Path:
     """
     >>> wine_machine_install.create_wine_test_prefixes()
-    >>> username = configmagick_linux.get_current_username()
     >>> path_mono_msi_filename = get_mono_msi_filename_from_appwiz(wine_prefix='wine_test_32')
     >>> assert str(path_mono_msi_filename).startswith('wine-mono-') and str(path_mono_msi_filename).endswith('.msi')
     >>> path_mono_msi_filename = get_mono_msi_filename_from_appwiz(wine_prefix='wine_test_64')

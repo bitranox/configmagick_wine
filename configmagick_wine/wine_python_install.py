@@ -91,6 +91,12 @@ def install_wine_python(wine_prefix: Union[str, pathlib.Path] = configmagick_lin
                 display=configmagick_linux.get_env_display())
     lib_shell.run_shell_command(command, shell=True, run_as_user=username, pass_stdout_stderr_to_sys=True, quiet=quiet)
     lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)   # it is cheap, just in case
+    command = 'WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" wine python --version'.format(wine_prefix=wine_prefix, wine_arch=wine_arch)
+    try:
+        result = lib_shell.run_shell_command(command, run_as_user=username, quiet=True, shell=True)
+        assert result.stdout.startswith('Python')
+    except (subprocess.CalledProcessError, AssertionError):
+        raise RuntimeError('can not install Python on WINEPREFIX="{wine_prefix}"'.format(wine_prefix=wine_prefix))
 
 
 def get_latest_python_version() -> str:

@@ -1,11 +1,22 @@
 # ### STDLIB
 import pathlib
-from typing import Union
+import subprocess
+from typing import Tuple, Union
 
 # ### OWN
 import configmagick_linux
+import lib_list
 import lib_regexp
 import lib_shell
+
+# ####### PROJ
+try:
+    # imports for local pytest
+    from . import wine_machine_install  # type: ignore # pragma: no cover
+except ImportError:                     # type: ignore # pragma: no cover
+    # imports for doctest
+    # noinspection PyUnresolvedReferences
+    import wine_machine_install                 # type: ignore # pragma: no cover
 
 
 def fix_wine_permissions(wine_prefix: Union[str, pathlib.Path], username: str) -> None:
@@ -199,3 +210,187 @@ def remove_file_from_winecache(filename: pathlib.Path, username: str) -> None:
     if path_wine_cache_file.exists():
         lib_shell.run_shell_command('rm -f "{path_wine_cache_file}"'.format(path_wine_cache_file=path_wine_cache_file),
                                     quiet=True, use_sudo=True)
+
+
+def prepend_path_to_wine_registry_path(path_to_add: Union[str, pathlib.WindowsPath],
+                                       wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
+                                       username: str = configmagick_linux.get_current_username()) -> None:
+    """
+    >>> wine_machine_install.create_wine_test_prefixes()
+    >>> old_path = get_wine_registry_path(wine_prefix='wine_test_32')
+    >>> prepend_path_to_wine_registry_path(path_to_add='c:\\\\test',wine_prefix='wine_test_32')
+    >>> assert get_wine_registry_path(wine_prefix='wine_test_32').startswith('c:\\\\test;')
+    >>> set_wine_registry_path(path=old_path, wine_prefix='wine_test_32')
+    >>> assert get_wine_registry_path(wine_prefix='wine_test_32') == old_path
+
+    """
+    wine_prefix = get_and_check_wine_prefix(wine_prefix=wine_prefix, username=username)
+    current_wine_registry_path = get_wine_registry_path(wine_prefix=wine_prefix, username=username)
+    s_path_to_add = str(path_to_add).strip()
+    l_current_wine_registry_path = current_wine_registry_path.split(';')
+    l_current_wine_registry_path = lib_list.ls_strip_elements(l_current_wine_registry_path)
+    l_current_wine_registry_path = lib_list.del_double_elements(l_current_wine_registry_path)
+    if not lib_list.is_list_element_fnmatching(ls_elements=l_current_wine_registry_path, s_fnmatch_searchpattern=s_path_to_add):
+        l_current_wine_registry_path = [s_path_to_add] + l_current_wine_registry_path
+    new_wine_registry_path = ';'.join(l_current_wine_registry_path)
+    set_wine_registry_path(path=new_wine_registry_path, wine_prefix=wine_prefix, username=username)
+
+
+def get_wine_registry_path(wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
+                           username: str = configmagick_linux.get_current_username()) -> str:
+    """
+    >>> wine_machine_install.create_wine_test_prefixes()
+    >>> result = get_wine_registry_path(wine_prefix='wine_test_32')
+    >>> assert 'c:\\windows' in result.lower()
+    >>> result = get_wine_registry_path(wine_prefix='wine_test_64')
+    >>> assert 'c:\\windows' in result.lower()
+
+    """
+    wine_prefix = get_and_check_wine_prefix(wine_prefix=wine_prefix, username=username)
+    current_wine_registry_path = get_wine_registry_data(reg_key='HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment',
+                                                        reg_subkey='PATH',
+                                                        wine_prefix=wine_prefix,
+                                                        username=username)
+    return current_wine_registry_path
+
+
+def set_wine_registry_path(path: str,
+                           wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
+                           username: str = configmagick_linux.get_current_username()) -> None:
+    """
+    >>> wine_machine_install.create_wine_test_prefixes()
+    >>> old_path = get_wine_registry_path(wine_prefix='wine_test_32')
+    >>> set_wine_registry_path(path='c:\\\\test', wine_prefix='wine_test_32')
+    >>> assert get_wine_registry_path(wine_prefix='wine_test_32') == 'c:\\\\test'
+    >>> set_wine_registry_path(path=old_path, wine_prefix='wine_test_32')
+    >>> restored_path = get_wine_registry_path(wine_prefix='wine_test_32')
+    >>> assert restored_path == old_path
+
+    """
+    wine_prefix = get_and_check_wine_prefix(wine_prefix=wine_prefix, username=username)
+    write_wine_registry_data(reg_key='HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment',
+                             reg_subkey='PATH',
+                             reg_data=path,
+                             wine_prefix=wine_prefix,
+                             username=username)
+
+
+def get_wine_registry_data(reg_key: str,
+                           reg_subkey: str,
+                           wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
+                           username: str = configmagick_linux.get_current_username()) -> str:
+    """
+    >>> wine_machine_install.create_wine_test_prefixes()
+    >>> result = get_wine_registry_data(reg_key='HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment',\
+                                        reg_subkey='PATH', wine_prefix='wine_test_32')
+    >>> assert 'c:\\windows' in result.lower()
+
+    >>> result = get_wine_registry_data(reg_key='HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment',\
+                                        reg_subkey='PATH', wine_prefix='wine_test_64')
+    >>> assert 'c:\\windows' in result.lower()
+
+    >>> result = get_wine_registry_data(reg_key='HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment',\
+                                        reg_subkey='UNKNOWN', wine_prefix='wine_test_32')  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+    Traceback (most recent call last):
+        ...
+    RuntimeError: can not read Wine Registry, WINEPREFIX=".../wine_test_32", key="...", subkey="UNKNOWN"
+    """
+    wine_prefix = get_and_check_wine_prefix(wine_prefix=wine_prefix, username=username)
+    try:
+        registry_data = get_l_wine_registry_data_struct(reg_key=reg_key, reg_subkey=reg_subkey, wine_prefix=wine_prefix, username=username)[1]
+        return registry_data
+    except subprocess.CalledProcessError:
+        raise RuntimeError('can not read Wine Registry Data, WINEPREFIX="{wine_prefix}", key="{reg_key}", subkey="{reg_subkey}"'.format(
+            wine_prefix=wine_prefix, reg_key=reg_key, reg_subkey=reg_subkey))
+
+
+def get_wine_registry_data_type(reg_key: str,
+                                reg_subkey: str,
+                                wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
+                                username: str = configmagick_linux.get_current_username()) -> str:
+    """
+    >>> wine_machine_install.create_wine_test_prefixes()
+    >>> result = get_wine_registry_data_type(reg_key='HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment',\
+                                             reg_subkey='PATH', wine_prefix='wine_test_32')
+    >>> assert result == 'REG_EXPAND_SZ'
+
+    >>> result = get_wine_registry_data_type(reg_key='HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment',\
+                                             reg_subkey='PATH', wine_prefix='wine_test_64')
+    >>> assert result == 'REG_EXPAND_SZ'
+
+    >>> result = get_wine_registry_data_type(reg_key='HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment',\
+                                             reg_subkey='UNKNOWN', wine_prefix='wine_test_32')  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+    Traceback (most recent call last):
+        ...
+    RuntimeError: can not read Wine Registry Data Type, WINEPREFIX=".../wine_test_32", key="...", subkey="UNKNOWN"
+    """
+    wine_prefix = get_and_check_wine_prefix(wine_prefix=wine_prefix, username=username)
+    try:
+        registry_data_type = get_l_wine_registry_data_struct(reg_key=reg_key, reg_subkey=reg_subkey, wine_prefix=wine_prefix, username=username)[0]
+        return registry_data_type
+    except RuntimeError:
+        raise RuntimeError('can not read Wine Registry Data Type, WINEPREFIX="{wine_prefix}", key="{reg_key}", subkey="{reg_subkey}"'.format(
+            wine_prefix=wine_prefix, reg_key=reg_key, reg_subkey=reg_subkey))
+
+
+def get_l_wine_registry_data_struct(reg_key: str,
+                                    reg_subkey: str,
+                                    wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
+                                    username: str = configmagick_linux.get_current_username()) -> Tuple[str, str]:
+    """
+    :returns [data_type, data]
+    >>> wine_machine_install.create_wine_test_prefixes()
+    >>> result = get_l_wine_registry_data_struct(reg_key='HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment',\
+                                                 reg_subkey='PATH', wine_prefix='wine_test_32')
+    >>> assert result[0] == 'REG_EXPAND_SZ'
+    >>> assert 'c:\\windows' in result[1].lower()
+
+    >>> result = get_l_wine_registry_data_struct(reg_key='HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment',\
+                                                 reg_subkey='PATH', wine_prefix='wine_test_64')
+    >>> assert result[0] == 'REG_EXPAND_SZ'
+    >>> assert 'c:\\windows' in result[1].lower()
+
+    >>> result = get_l_wine_registry_data_struct(reg_key='HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment',\
+                                                 reg_subkey='UNKNOWN', wine_prefix='wine_test_32')  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+    Traceback (most recent call last):
+        ...
+    RuntimeError: can not read Wine Registry, WINEPREFIX=".../wine_test_32", key="...", subkey="UNKNOWN"
+    """
+    try:
+        wine_prefix = get_and_check_wine_prefix(wine_prefix=wine_prefix, username=username)
+        wine_arch = get_wine_arch_from_wine_prefix(wine_prefix=wine_prefix, username=username)
+        command = 'WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" wine reg query "{reg_key}" /v "{reg_subkey}"'.format(
+            wine_prefix=wine_prefix, wine_arch=wine_arch, reg_key=reg_key, reg_subkey=reg_subkey)
+        result = lib_shell.run_shell_command(command, quiet=True, shell=True, run_as_user=username)
+        registry_string = result.stdout.split(reg_key)[1]           # because there may be blanks in the key
+        registry_string = registry_string.split(reg_subkey)[1]      # and there might be blanks in the subkey
+        l_registry_data = registry_string.split(maxsplit=1)         # here we split data_type and Data, there might be blanks in the data
+        return l_registry_data[0], l_registry_data[1]
+    except subprocess.CalledProcessError:
+        raise RuntimeError('can not read Wine Registry, WINEPREFIX="{wine_prefix}", key="{reg_key}", subkey="{reg_subkey}"'.format(
+            wine_prefix=wine_prefix, reg_key=reg_key, reg_subkey=reg_subkey))
+
+
+def write_wine_registry_data(reg_key: str,
+                             reg_subkey: str,
+                             reg_data: str,
+                             reg_data_type: str = 'auto',
+                             wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
+                             username: str = configmagick_linux.get_current_username()) -> None:
+    """ write wine registry data
+    Parameter:
+        reg_data_type:   'auto' to get the data type if the key already exists, otherwise put 'REG_SZ' or 'REG_EXPAND_SZ'
+
+    """
+
+    wine_prefix = get_and_check_wine_prefix(wine_prefix=wine_prefix, username=username)
+    try:
+        wine_arch = get_wine_arch_from_wine_prefix(wine_prefix=wine_prefix, username=username)
+        if reg_data_type == 'auto':
+            reg_data_type = get_wine_registry_data_type(reg_key=reg_key, reg_subkey=reg_subkey, wine_prefix=wine_prefix, username=username)
+        command = 'WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" wine reg add "{reg_key}" /t "{reg_data_type}" /v "{reg_subkey}" /d "{reg_data}" /f'\
+                  .format(wine_prefix=wine_prefix, wine_arch=wine_arch, reg_key=reg_key, reg_data_type=reg_data_type, reg_subkey=reg_subkey, reg_data=reg_data)
+        lib_shell.run_shell_command(command, quiet=True, shell=True, run_as_user=username)
+    except subprocess.CalledProcessError:
+        raise RuntimeError('can not write Wine Registry, WINEPREFIX="{wine_prefix}", key="{reg_key}", subkey="{reg_subkey}"'.format(
+            wine_prefix=wine_prefix, reg_key=reg_key, reg_subkey=reg_subkey))

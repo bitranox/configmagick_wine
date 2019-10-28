@@ -26,9 +26,18 @@ except ImportError:                     # type: ignore # pragma: no cover
 
 def install_wine_python(wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
                         username: str = configmagick_linux.get_current_username(),
-                        python_version: str = 'latest') -> None:
+                        python_version: str = 'latest',
+                        quiet: bool = False) -> None:
 
     """ install python on wine
+
+    Parameter:
+        python_version : 'latest' or valid Version number, like '3.8.0'
+
+    >>> wine_machine_install.create_wine_test_prefixes()
+    >>> install_wine_python(wine_prefix='wine_test_32', quiet=True)
+    >>> install_wine_python(wine_prefix='wine_test_64', quiet=True)
+
     """
     wine_prefix = lib_wine.get_and_check_wine_prefix(wine_prefix, username)
     wine_arch = lib_wine.get_wine_arch_from_wine_prefix(wine_prefix=wine_prefix, username=username)
@@ -44,12 +53,13 @@ def install_wine_python(wine_prefix: Union[str, pathlib.Path] = configmagick_lin
                                  .format(wine_prefix=wine_prefix,
                                          wine_arch=wine_arch,
                                          wine_cache_directory=wine_cache_directory,
-                                         path_python_filename=path_python_filename))
+                                         path_python_filename=path_python_filename),
+                                 quiet=quiet)
+
     download_python_file(python_version=python_version, wine_prefix=wine_prefix, username=username)
 
     lib_log_utils.log_verbose('Install "{path_python_filename}" on WINEPREFIX="{wine_prefix}"'
-                              .format(path_python_filename=path_python_filename,
-                                      wine_prefix=wine_prefix))
+                              .format(path_python_filename=path_python_filename, wine_prefix=wine_prefix), quiet=quiet)
 
     # we need to set display here, it seems its not copied to the new environment
     command = 'DISPLAY="{display}" WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" '\
@@ -60,7 +70,7 @@ def install_wine_python(wine_prefix: Union[str, pathlib.Path] = configmagick_lin
                 wine_cache_directory=wine_cache_directory,
                 path_python_filename=path_python_filename,
                 display=configmagick_linux.get_env_display())
-    lib_shell.run_shell_command(command, shell=True, run_as_user=username, pass_stdout_stderr_to_sys=True)
+    lib_shell.run_shell_command(command, shell=True, run_as_user=username, pass_stdout_stderr_to_sys=True, quiet=quiet)
     lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)   # it is cheap, just in case
 
 
@@ -167,12 +177,13 @@ def get_path_python_filename(version: str, arch: str = 'win32') -> pathlib.Path:
 def download_python_file(python_version: str, wine_prefix: Union[str, pathlib.Path], username: str, force_download: bool = False) -> None:
     """ Downloads the Python Exe File to the WineCache directory
 
+    >>> wine_machine_install.create_wine_test_prefixes()
     >>> wine_prefix = configmagick_linux.get_path_home_dir_current_user() / 'wine_test_32'
     >>> username = configmagick_linux.get_current_username()
     >>> wine_arch = lib_wine.get_wine_arch_from_wine_prefix(wine_prefix=wine_prefix, username=username)
     >>> python_version = get_latest_python_version()
     >>> path_python_filename = get_path_python_filename(version=python_version, arch=wine_arch)
-    >>> path_downloaded_file = pathlib.Path.home() / '.cache/wine' / path_python_filename
+    >>> path_downloaded_file = configmagick_linux.get_path_home_dir_current_user() / '.cache/wine' / path_python_filename
     >>> if path_downloaded_file.is_file():
     ...    path_downloaded_file.unlink()
     >>> download_python_file(python_version=python_version, wine_prefix=wine_prefix, username=username, force_download=True)
@@ -185,7 +196,7 @@ def download_python_file(python_version: str, wine_prefix: Union[str, pathlib.Pa
     >>> wine_arch = lib_wine.get_wine_arch_from_wine_prefix(wine_prefix=wine_prefix, username=username)
     >>> python_version = get_latest_python_version()
     >>> path_python_filename = get_path_python_filename(version=python_version, arch=wine_arch)
-    >>> path_downloaded_file = pathlib.Path.home() / '.cache/wine' / path_python_filename
+    >>> path_downloaded_file = configmagick_linux.get_path_home_dir_current_user() / '.cache/wine' / path_python_filename
     >>> if path_downloaded_file.is_file():
     ...    path_downloaded_file.unlink()
     >>> download_python_file(python_version=python_version, wine_prefix=wine_prefix, username=username, force_download=True)

@@ -383,6 +383,7 @@ def write_wine_registry_data(reg_key: str,
     Parameter:
         reg_data_type:   'auto' to get the data type if the key already exists, otherwise put 'REG_SZ' or 'REG_EXPAND_SZ'
 
+
     """
 
     wine_prefix = get_and_check_wine_prefix(wine_prefix=wine_prefix, username=username)

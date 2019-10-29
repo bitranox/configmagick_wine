@@ -61,7 +61,7 @@ def install_wine_git(wine_prefix: Union[str, pathlib.Path] = configmagick_linux.
     lib_shell.run_shell_command('rm -Rf "{path_git_install_dir}"'.format(path_git_install_dir=path_git_install_dir), quiet=True, use_sudo=True, shell=True)
     # remove old installation if exists
     configmagick_linux.force_remove_directory_recursive(path_git_install_dir)
-    command = '7z e {wine_cache_directory}/{path_git_filename} -o"{path_git_install_dir}" -y -bb0 -bd'.format(
+    command = '7z e {wine_cache_directory}/{path_git_filename} -o"{path_git_install_dir}" -y -bd'.format(
         wine_cache_directory=wine_cache_directory,
         path_git_filename=path_git_filename,
         path_git_install_dir=path_git_install_dir)

@@ -133,6 +133,8 @@ def get_wine_arch_from_wine_prefix(wine_prefix: Union[str, pathlib.Path],
 
 
 def get_path_wine_system_registry(wine_prefix: pathlib.Path) -> pathlib.Path:
+    """ get the path to wine system.reg
+    """
     path_wine_system_registry = wine_prefix / 'system.reg'
     return path_wine_system_registry
 
@@ -220,7 +222,7 @@ def prepend_path_to_wine_registry_path(path_to_add: Union[str, pathlib.WindowsPa
     >>> old_path = get_wine_registry_path(wine_prefix='wine_test_32')
     >>> prepend_path_to_wine_registry_path(path_to_add='c:\\\\test',wine_prefix='wine_test_32')
     >>> assert get_wine_registry_path(wine_prefix='wine_test_32').startswith('c:\\\\test;')
-    >>> set_wine_registry_path(path=old_path, wine_prefix='wine_test_32')
+    >>> write_wine_registry_path(path=old_path, wine_prefix='wine_test_32')
     >>> assert get_wine_registry_path(wine_prefix='wine_test_32') == old_path
 
     """
@@ -233,7 +235,7 @@ def prepend_path_to_wine_registry_path(path_to_add: Union[str, pathlib.WindowsPa
     if not lib_list.is_list_element_fnmatching(ls_elements=l_current_wine_registry_path, s_fnmatch_searchpattern=s_path_to_add):
         l_current_wine_registry_path = [s_path_to_add] + l_current_wine_registry_path
     new_wine_registry_path = ';'.join(l_current_wine_registry_path)
-    set_wine_registry_path(path=new_wine_registry_path, wine_prefix=wine_prefix, username=username)
+    write_wine_registry_path(path=new_wine_registry_path, wine_prefix=wine_prefix, username=username)
 
 
 def get_wine_registry_path(wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
@@ -254,15 +256,15 @@ def get_wine_registry_path(wine_prefix: Union[str, pathlib.Path] = configmagick_
     return current_wine_registry_path
 
 
-def set_wine_registry_path(path: str,
-                           wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
-                           username: str = configmagick_linux.get_current_username()) -> None:
+def write_wine_registry_path(path: str,
+                             wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
+                             username: str = configmagick_linux.get_current_username()) -> None:
     """
     >>> wine_machine_install.create_wine_test_prefixes()
     >>> old_path = get_wine_registry_path(wine_prefix='wine_test_32')
-    >>> set_wine_registry_path(path='c:\\\\test', wine_prefix='wine_test_32')
+    >>> write_wine_registry_path(path='c:\\\\test', wine_prefix='wine_test_32')
     >>> assert get_wine_registry_path(wine_prefix='wine_test_32') == 'c:\\\\test'
-    >>> set_wine_registry_path(path=old_path, wine_prefix='wine_test_32')
+    >>> write_wine_registry_path(path=old_path, wine_prefix='wine_test_32')
     >>> restored_path = get_wine_registry_path(wine_prefix='wine_test_32')
     >>> assert restored_path == old_path
 
@@ -390,7 +392,9 @@ def write_wine_registry_data(reg_key: str,
             reg_data_type = get_wine_registry_data_type(reg_key=reg_key, reg_subkey=reg_subkey, wine_prefix=wine_prefix, username=username)
         command = 'WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" wine reg add "{reg_key}" /t "{reg_data_type}" /v "{reg_subkey}" /d "{reg_data}" /f'\
                   .format(wine_prefix=wine_prefix, wine_arch=wine_arch, reg_key=reg_key, reg_data_type=reg_data_type, reg_subkey=reg_subkey, reg_data=reg_data)
+        fix_wine_permissions(wine_prefix=wine_prefix, username=username)  # need to fix system.reg after writing it (?) TODO
         lib_shell.run_shell_command(command, quiet=True, shell=True, run_as_user=username)
+        fix_wine_permissions(wine_prefix=wine_prefix, username=username)    # need to fix system.reg after writing it (?) TODO
     except subprocess.CalledProcessError:
         raise RuntimeError('can not write Wine Registry, WINEPREFIX="{wine_prefix}", key="{reg_key}", subkey="{reg_subkey}"'.format(
             wine_prefix=wine_prefix, reg_key=reg_key, reg_subkey=reg_subkey))

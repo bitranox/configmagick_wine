@@ -231,6 +231,9 @@ def prepend_path_to_wine_registry_path(path_to_add: Union[str, pathlib.WindowsPa
     s_path_to_add = str(path_to_add).strip()
     l_current_wine_registry_path = current_wine_registry_path.split(';')
     l_current_wine_registry_path = lib_list.ls_strip_elements(l_current_wine_registry_path)
+    # the path must not end with \\ , because if we set it this might escape the last " !!!
+    # like : wine reg add "..." /t "REG_EXPAND_SZ" /v "PATH" /d "c:\test\" /f  leads to : /bin/sh: 1: Syntax error: Unterminated quoted string
+    l_current_wine_registry_path = lib_list.ls_rstrip_elements(l_current_wine_registry_path, '\\')
     l_current_wine_registry_path = lib_list.del_double_elements(l_current_wine_registry_path)
     if not lib_list.is_list_element_fnmatching(ls_elements=l_current_wine_registry_path, s_fnmatch_searchpattern=s_path_to_add):
         l_current_wine_registry_path = [s_path_to_add] + l_current_wine_registry_path
@@ -269,6 +272,10 @@ def write_wine_registry_path(path: str,
     >>> assert restored_path == old_path
 
     """
+
+    # the path must not end with \\ , because if we set it this might escape the last " !!!
+    # like : wine reg add "..." /t "REG_EXPAND_SZ" /v "PATH" /d "c:\test\" /f  leads to : /bin/sh: 1: Syntax error: Unterminated quoted string
+    path = path.strip().rstrip('\\')
     wine_prefix = get_and_check_wine_prefix(wine_prefix=wine_prefix, username=username)
     write_wine_registry_data(reg_key='HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment',
                              reg_subkey='PATH',
@@ -393,9 +400,7 @@ def write_wine_registry_data(reg_key: str,
             reg_data_type = get_wine_registry_data_type(reg_key=reg_key, reg_subkey=reg_subkey, wine_prefix=wine_prefix, username=username)
         command = 'WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" wine reg add "{reg_key}" /t "{reg_data_type}" /v "{reg_subkey}" /d "{reg_data}" /f'\
                   .format(wine_prefix=wine_prefix, wine_arch=wine_arch, reg_key=reg_key, reg_data_type=reg_data_type, reg_subkey=reg_subkey, reg_data=reg_data)
-        fix_wine_permissions(wine_prefix=wine_prefix, username=username)  # need to fix system.reg after writing it (?) TODO
         lib_shell.run_shell_command(command, quiet=True, shell=True, run_as_user=username)
-        fix_wine_permissions(wine_prefix=wine_prefix, username=username)    # need to fix system.reg after writing it (?) TODO
     except subprocess.CalledProcessError:
         raise RuntimeError('can not write Wine Registry, WINEPREFIX="{wine_prefix}", key="{reg_key}", subkey="{reg_subkey}"'.format(
             wine_prefix=wine_prefix, reg_key=reg_key, reg_subkey=reg_subkey))

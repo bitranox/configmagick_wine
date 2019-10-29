@@ -86,7 +86,7 @@ def install_libfaudio0_backport(quiet: bool = False) -> None:
 
 def update_wine_packages(quiet: bool = False) -> None:
     lib_log_utils.log_verbose('Update wine packages', quiet=quiet)
-    configmagick_linux.update(quiet=quiet)
+    configmagick_linux.full_update_and_upgrade(quiet=quiet)
 
 
 def install_wine_packages(wine_release: str, reinstall: bool = False, quiet: bool = False) -> None:

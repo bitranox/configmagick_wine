@@ -57,6 +57,7 @@ def install_wine_python(wine_prefix: Union[str, pathlib.Path] = configmagick_lin
     >>> assert '.' in result.stdout
 
     """
+    configmagick_linux.install_linux_package('xvfb', reinstall=True)
     wine_prefix = lib_wine.get_and_check_wine_prefix(wine_prefix, username)
     wine_arch = lib_wine.get_wine_arch_from_wine_prefix(wine_prefix=wine_prefix, username=username)
     if python_version == 'latest':
@@ -92,7 +93,7 @@ def install_wine_python(wine_prefix: Union[str, pathlib.Path] = configmagick_lin
                 display=configmagick_linux.get_env_display())
     """
 
-    command = 'DISPLAY="{display}" WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" '\
+    command = 'xvfb-run WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" '\
               'wineconsole "{wine_cache_directory}/{path_python_filename}" '\
               '/quiet InstallAllUsers=1 PrependPath=1 Include_test=0'\
         .format(wine_prefix=wine_prefix,

@@ -57,8 +57,6 @@ def install_wine_python(wine_prefix: Union[str, pathlib.Path] = configmagick_lin
     >>> assert '.' in result.stdout
 
     """
-    configmagick_linux.install_linux_package('libsm6', quiet=quiet)
-    configmagick_linux.install_linux_package('libsm6:i386', quiet=quiet)
     wine_prefix = lib_wine.get_and_check_wine_prefix(wine_prefix, username)
     wine_arch = lib_wine.get_wine_arch_from_wine_prefix(wine_prefix=wine_prefix, username=username)
     if python_version == 'latest':

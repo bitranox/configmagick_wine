@@ -24,6 +24,8 @@ def install_wine(wine_release: str, linux_release_name: str = configmagick_linux
 
     raise_if_wine_release_unknown(wine_release)
     add_architecture_386(quiet=quiet)
+    configmagick_linux.install_linux_package('libsm6', quiet=quiet)
+    configmagick_linux.install_linux_package('libsm6:i386', quiet=quiet)
     add_wine_key(linux_release_name=linux_release_name, quiet=quiet)
     install_libfaudio0_if_needed(quiet=quiet)
     update_wine_packages(quiet=quiet)

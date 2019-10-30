@@ -116,7 +116,7 @@ def is_xvfb_service_active() -> bool:
         is_running_service = configmagick_linux.is_service_active('xvfb')
     else:
         is_running_service = False
-    return is_running_service
+    return bool(is_running_service)
 
 
 def get_latest_python_version() -> str:

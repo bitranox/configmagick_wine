@@ -100,7 +100,7 @@ def install_wine_python(wine_prefix: Union[str, pathlib.Path] = configmagick_lin
                 wine_arch=wine_arch,
                 wine_cache_directory=wine_cache_directory,
                 path_python_filename=path_python_filename)
-                # display=configmagick_linux.get_env_display())
+    # display=configmagick_linux.get_env_display())
 
     # for travis CI
     if configmagick_linux.is_service_active('xvfb'):

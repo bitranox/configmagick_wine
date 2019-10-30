@@ -93,6 +93,7 @@ def install_wine_python(wine_prefix: Union[str, pathlib.Path] = configmagick_lin
                 display=configmagick_linux.get_env_display())
     """
 
+
     command = 'WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" '\
               'xvfb-run wineconsole "{wine_cache_directory}/{path_python_filename}" '\
               '/quiet InstallAllUsers=1 PrependPath=1 Include_test=0'\
@@ -103,10 +104,14 @@ def install_wine_python(wine_prefix: Union[str, pathlib.Path] = configmagick_lin
     # display=configmagick_linux.get_env_display())
 
     # for travis CI
-    if configmagick_linux.is_service_active('xvfb'):
-        command = 'sh -c "{command}"'.format(command=command)
 
+    xvfb_service_active = configmagick_linux.is_service_active('xvfb')
+    if xvfb_service_active:
+        configmagick_linux.stop_service('xvfb')
     lib_shell.run_shell_command(command, shell=True, run_as_user=username, pass_stdout_stderr_to_sys=True, quiet=quiet)
+
+    if xvfb_service_active:
+        configmagick_linux.start_service('xvfb')
     lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)   # it is cheap, just in case
 
     command = 'WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" wine python --version'.format(wine_prefix=wine_prefix, wine_arch=wine_arch)

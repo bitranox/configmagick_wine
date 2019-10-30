@@ -72,7 +72,7 @@ def add_wine_key(linux_release_name: str, quiet: bool = False) -> None:
 
 
 def install_libfaudio0_if_needed(quiet: bool = False) -> None:
-    if int(configmagick_linux.get_linux_release_number_major()) > 18:
+    if int(configmagick_linux.get_linux_release_number_major()) >= 18:
         try:
             lib_log_utils.log_verbose('Install libfaudio0', quiet=quiet)
             configmagick_linux.install_linux_package('libfaudio0', quiet=quiet)

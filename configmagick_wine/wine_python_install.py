@@ -80,14 +80,20 @@ def install_wine_python(wine_prefix: Union[str, pathlib.Path] = configmagick_lin
                               .format(path_python_filename=path_python_filename, wine_prefix=wine_prefix), quiet=quiet)
 
     # we need to set display here, it seems its not copied to the new environment
-    xvfb_service_active = is_xvfb_service_active()
+
     """
-    if xvfb_service_active:
-        configmagick_linux.stop_service('xvfb')
+    command = 'DISPLAY="{display}" WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" '\
+              'wine "{wine_cache_directory}/{path_python_filename}" '\
+              '/quiet InstallAllUsers=1 PrependPath=1 Include_test=0'\
+        .format(wine_prefix=wine_prefix,
+                wine_arch=wine_arch,
+                wine_cache_directory=wine_cache_directory,
+                path_python_filename=path_python_filename,
+                display=configmagick_linux.get_env_display())
     """
 
     command = 'DISPLAY="{display}" WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" '\
-              'wine "{wine_cache_directory}/{path_python_filename}" '\
+              'wineconsole "{wine_cache_directory}/{path_python_filename}" '\
               '/quiet InstallAllUsers=1 PrependPath=1 Include_test=0'\
         .format(wine_prefix=wine_prefix,
                 wine_arch=wine_arch,
@@ -97,11 +103,6 @@ def install_wine_python(wine_prefix: Union[str, pathlib.Path] = configmagick_lin
 
     lib_shell.run_shell_command(command, shell=True, run_as_user=username, pass_stdout_stderr_to_sys=True, quiet=quiet)
     lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)   # it is cheap, just in case
-
-    """
-    if xvfb_service_active:
-        configmagick_linux.start_service('xvfb')
-    """
 
     command = 'WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" wine python --version'.format(wine_prefix=wine_prefix, wine_arch=wine_arch)
     try:

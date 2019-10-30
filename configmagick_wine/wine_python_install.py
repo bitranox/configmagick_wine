@@ -82,7 +82,6 @@ def install_wine_python(wine_prefix: Union[str, pathlib.Path] = configmagick_lin
 
     # we need to set display here, it seems its not copied to the new environment
 
-    """
     command = 'DISPLAY="{display}" WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" '\
               'wine "{wine_cache_directory}/{path_python_filename}" '\
               '/quiet InstallAllUsers=1 PrependPath=1 Include_test=0'\
@@ -91,8 +90,8 @@ def install_wine_python(wine_prefix: Union[str, pathlib.Path] = configmagick_lin
                 wine_cache_directory=wine_cache_directory,
                 path_python_filename=path_python_filename,
                 display=configmagick_linux.get_env_display())
-    """
 
+    """
     command = 'WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" '\
               'xvfb-run -a wine "{wine_cache_directory}/{path_python_filename}" '\
               '/quiet InstallAllUsers=1 PrependPath=1 Include_test=0'\
@@ -107,11 +106,14 @@ def install_wine_python(wine_prefix: Union[str, pathlib.Path] = configmagick_lin
     xvfb_service_active = configmagick_linux.is_service_active('xvfb')
     if xvfb_service_active:
         configmagick_linux.stop_service('xvfb')
+    """
 
     lib_shell.run_shell_command(command, shell=True, run_as_user=username, pass_stdout_stderr_to_sys=True, quiet=quiet)
 
+    """
     if xvfb_service_active:
         configmagick_linux.start_service('xvfb')
+    """
 
     lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)   # it is cheap, just in case
 

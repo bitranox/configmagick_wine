@@ -1,6 +1,7 @@
 language: python
 group: travis_latest
-dist: xenial
+# dist: xenial
+dist: bionic
 sudo: true
 
 before_script:

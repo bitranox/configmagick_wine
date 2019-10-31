@@ -242,7 +242,7 @@ install:
     - if [[ ${CMDPREFIX} == "wine" ]]; then configmagick_wine install_wine_mono_latest --wine_prefix=${WINEPREFIX}; fi
     - if [[ ${CMDPREFIX} == "wine" ]]; then configmagick_wine install_wine_gecko --wine_prefix=${WINEPREFIX}; fi
     - if [[ ${CMDPREFIX} == "wine" ]]; then configmagick_wine set_windows_version --windows_version=${wine_windows_version} --wine_prefix=${WINEPREFIX}; fi
-    - if [[ ${CMDPREFIX} == "wine" ]]; then Xephyr -br -ac -reset -screen 800x600 :1 ; fi
+    - if [[ ${CMDPREFIX} == "wine" ]]; then Xephyr -br -ac -reset -screen 800x600 :1 & ; fi
     - if [[ ${CMDPREFIX} == "wine" ]]; then DISPLAY=:1.0 configmagick_wine install_wine_python --wine_prefix=${WINEPREFIX}; fi
     - if [[ ${CMDPREFIX} == "wine" ]]; then configmagick_wine install_wine_git --wine_prefix=${WINEPREFIX}; fi
 

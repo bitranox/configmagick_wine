@@ -76,13 +76,8 @@ def install_wine_python(wine_prefix: Union[str, pathlib.Path] = configmagick_lin
 
     download_python_file(python_version=python_version, wine_prefix=wine_prefix, username=username)
 
-    if configmagick_linux.is_on_travis():
-        return
-
     lib_log_utils.log_verbose('Install "{path_python_filename}" on WINEPREFIX="{wine_prefix}"'
                               .format(path_python_filename=path_python_filename, wine_prefix=wine_prefix), quiet=quiet)
-
-    # we need to set display here, it seems its not copied to the new environment
 
     command = 'DISPLAY="{display}" WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" '\
               'wine "{wine_cache_directory}/{path_python_filename}" '\

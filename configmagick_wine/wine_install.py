@@ -24,6 +24,7 @@ def install_wine(wine_release: str, linux_release_name: str = configmagick_linux
 
     raise_if_wine_release_unknown(wine_release)
     configmagick_linux.full_update_and_upgrade(quiet=quiet)
+    install_wine_required_packages()
     add_architecture_386(quiet=quiet)
     add_wine_key(linux_release_name=linux_release_name, quiet=quiet)
     install_libfaudio0_if_needed(quiet=quiet)
@@ -32,6 +33,10 @@ def install_wine(wine_release: str, linux_release_name: str = configmagick_linux
 
     lib_log_utils.banner_success('Wine Installation OK - Wine Release: "{wine_release}", Wine Version: "{wine_version_number}"'
                                  .format(wine_release=wine_release, wine_version_number=get_wine_version_number()), quiet=quiet)
+
+
+def install_wine_required_packages(quiet: bool = False) -> None:
+    configmagick_linux.install_linux_packages(['winbind', 'xserver-xephyr'], quiet=quiet)
 
 
 def raise_if_wine_release_unknown(wine_release: str) -> None:

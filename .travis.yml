@@ -80,7 +80,10 @@ matrix:
 
     - os: linux
       language: python
-      python: 'pypy3'
+      # xenial:
+      # python: 'pypy3'
+      # disco:
+      python: 'pypy3.5-6.0'
 
     - os: linux
       language: python

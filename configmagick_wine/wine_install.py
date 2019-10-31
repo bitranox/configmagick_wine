@@ -36,7 +36,7 @@ def install_wine(wine_release: str, linux_release_name: str = configmagick_linux
 
 
 def install_wine_required_packages(quiet: bool = False) -> None:
-    configmagick_linux.install_linux_packages(['winbind', 'xserver-xephyr'], quiet=quiet)
+    configmagick_linux.install_linux_packages(['winbind'], quiet=quiet)
 
 
 def raise_if_wine_release_unknown(wine_release: str) -> None:

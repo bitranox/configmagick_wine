@@ -27,7 +27,7 @@ except ImportError:                     # type: ignore # pragma: no cover
 def install_wine_python(wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
                         username: str = configmagick_linux.get_current_username(),
                         python_version: str = 'latest',
-                        quiet: bool = False) -> None:
+                        quiet: bool = True) -> None:
 
     """ install python on wine
 

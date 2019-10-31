@@ -22,3 +22,8 @@ def travis_workaround() -> None:
 
     """
     pass
+
+
+def install_wine_python_travis() -> None:
+    import doctest
+    doctest.testmod()

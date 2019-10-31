@@ -27,33 +27,35 @@ import lib_log_utils
 
 try:
     # imports for local pytest
-    from . import lib_wine                  # type: ignore # pragma: no cover
-    from . import wine_gecko_install        # type: ignore # pragma: no cover
-    from . import wine_git_install          # type: ignore # pragma: no cover
-    from . import wine_install              # type: ignore # pragma: no cover
-    from . import wine_machine_install      # type: ignore # pragma: no cover
-    from . import wine_mono_install         # type: ignore # pragma: no cover
-    from . import wine_python_install       # type: ignore # pragma: no cover
-except ImportError:                         # type: ignore # pragma: no cover
+    from . import lib_wine                    # type: ignore # pragma: no cover
+    from . import wine_gecko_install          # type: ignore # pragma: no cover
+    from . import wine_git_install            # type: ignore # pragma: no cover
+    from . import wine_install                # type: ignore # pragma: no cover
+    from . import wine_machine_install        # type: ignore # pragma: no cover
+    from . import wine_mono_install           # type: ignore # pragma: no cover
+    from . import wine_python_install         # type: ignore # pragma: no cover
+    from . import wine_python_install_travis  # type: ignore # pragma: no cover
+except ImportError:                           # type: ignore # pragma: no cover
     # imports for doctest
     # noinspection PyUnresolvedReferences
-    import lib_wine                         # type: ignore # pragma: no cover
+    import lib_wine                           # type: ignore # pragma: no cover
     # noinspection PyUnresolvedReferences
-    import wine_gecko_install               # type: ignore # pragma: no cover
+    import wine_gecko_install                 # type: ignore # pragma: no cover
     # noinspection PyUnresolvedReferences
-    import wine_git_install               # type: ignore # pragma: no cover
+    import wine_git_install                   # type: ignore # pragma: no cover
     # noinspection PyUnresolvedReferences
-    import wine_install                     # type: ignore # pragma: no cover
+    import wine_install                       # type: ignore # pragma: no cover
     # noinspection PyUnresolvedReferences
-    import wine_machine_install             # type: ignore # pragma: no cover
+    import wine_machine_install               # type: ignore # pragma: no cover
     # noinspection PyUnresolvedReferences
-    import wine_mono_install                # type: ignore # pragma: no cover
+    import wine_mono_install                  # type: ignore # pragma: no cover
     # noinspection PyUnresolvedReferences
-    import wine_python_install              # type: ignore # pragma: no cover
+    import wine_python_install                # type: ignore # pragma: no cover
+    # noinspection PyUnresolvedReferences
+    import wine_python_install_travis         # type: ignore # pragma: no cover
 
 
 def main() -> None:
-    exit_code = 0
     # noinspection PyBroadException
     try:
         lib_log_utils.BannerSettings.called_via_commandline = True
@@ -72,6 +74,7 @@ def main() -> None:
                 'install_wine_gecko': wine_gecko_install.install_wine_gecko,
                 'install_wine_git': wine_git_install.install_wine_git,
                 'install_wine_python': wine_python_install.install_wine_python,
+                'install_wine_python_travis': wine_python_install_travis.install_wine_python_travis,
                 'fix_wine_permissions': lib_wine.fix_wine_permissions,
             })
 

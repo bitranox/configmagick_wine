@@ -76,6 +76,9 @@ def install_wine_python(wine_prefix: Union[str, pathlib.Path] = configmagick_lin
 
     download_python_file(python_version=python_version, wine_prefix=wine_prefix, username=username)
 
+    if configmagick_linux.is_on_travis():
+        return
+
     lib_log_utils.log_verbose('Install "{path_python_filename}" on WINEPREFIX="{wine_prefix}"'
                               .format(path_python_filename=path_python_filename, wine_prefix=wine_prefix), quiet=quiet)
 
@@ -90,30 +93,7 @@ def install_wine_python(wine_prefix: Union[str, pathlib.Path] = configmagick_lin
                 path_python_filename=path_python_filename,
                 display=configmagick_linux.get_env_display())
 
-    """
-    command = 'WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" '\
-              'xvfb-run -a wine "{wine_cache_directory}/{path_python_filename}" '\
-              '/quiet InstallAllUsers=1 PrependPath=1 Include_test=0'\
-        .format(wine_prefix=wine_prefix,
-                wine_arch=wine_arch,
-                wine_cache_directory=wine_cache_directory,
-                path_python_filename=path_python_filename)
-    # display=configmagick_linux.get_env_display())
-
-    # for travis CI
-
-    xvfb_service_active = configmagick_linux.is_service_active('xvfb')
-    if xvfb_service_active:
-        configmagick_linux.stop_service('xvfb')
-    """
-
     lib_shell.run_shell_command(command, shell=True, run_as_user=username, pass_stdout_stderr_to_sys=True, quiet=quiet)
-
-    """
-    if xvfb_service_active:
-        configmagick_linux.start_service('xvfb')
-    """
-
     lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)   # it is cheap, just in case
 
     command = 'WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" wine python --version'.format(wine_prefix=wine_prefix, wine_arch=wine_arch)

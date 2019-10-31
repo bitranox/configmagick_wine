@@ -1,7 +1,7 @@
 language: python
 group: travis_latest
-# dist: xenial
-dist: bionic
+dist: xenial
+# dist: bionic
 sudo: true
 
 # before_script:
@@ -80,10 +80,7 @@ matrix:
 
     - os: linux
       language: python
-      # xenial:
-      # python: 'pypy3'
-      # disco:
-      python: 'pypy3.5-6.0'
+      python: 'pypy3'
 
     - os: linux
       language: python
@@ -245,8 +242,8 @@ install:
     - if [[ ${CMDPREFIX} == "wine" ]]; then configmagick_wine disable_gui_crash_dialogs --wine_prefix=${WINEPREFIX}; fi
     - if [[ ${CMDPREFIX} == "wine" ]]; then configmagick_wine install_wine_mono_latest --wine_prefix=${WINEPREFIX}; fi
     - if [[ ${CMDPREFIX} == "wine" ]]; then configmagick_wine install_wine_gecko --wine_prefix=${WINEPREFIX}; fi
-    - if [[ ${CMDPREFIX} == "wine" ]]; then python -m configmagick_wine set_windows_version --windows_version=${wine_windows_version} --wine_prefix=${WINEPREFIX}; fi
-    - if [[ ${CMDPREFIX} == "wine" ]]; then python -m configmagick_wine install_wine_python --wine_prefix=${WINEPREFIX}; fi
+    - if [[ ${CMDPREFIX} == "wine" ]]; then configmagick_wine set_windows_version --windows_version=${wine_windows_version} --wine_prefix=${WINEPREFIX}; fi
+    - if [[ ${CMDPREFIX} == "wine" ]]; then configmagick_wine install_wine_python --wine_prefix=${WINEPREFIX}; fi
     - if [[ ${CMDPREFIX} == "wine" ]]; then configmagick_wine install_wine_git --wine_prefix=${WINEPREFIX}; fi
 
     - if [[ ${CMDPREFIX} == "wine" ]]; then ${lib_bash_wine}/005_000_install_wine_powershell_core.sh ; fi

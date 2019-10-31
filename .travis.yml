@@ -28,8 +28,8 @@ addons:
         packages:
             - xvfb              # install xvfb virtual framebuffer - this we need for WINE
             - winbind           # needed for WINE
-            - x11-apps          # test if we need it
-            - xserver-xephyr    # needed for python Installation on wine
+            # - x11-apps          # test if we need it
+            # - xserver-xephyr    # needed for python Installation on wine
 
 services:   # start services
   - xvfb    # is needed for WINE on headless installation

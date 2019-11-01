@@ -24,6 +24,14 @@ except ImportError:                     # type: ignore # pragma: no cover
     import wine_machine_install                 # type: ignore # pragma: no cover
 
 
+class NullWriter(object):               # type: ignore # pragma: no cover
+    def write(self, s):                 # type: ignore # pragma: no cover
+        pass                            # type: ignore # pragma: no cover
+
+    def flush(self):                    # type: ignore # pragma: no cover
+        pass                            # type: ignore # pragma: no cover
+
+
 def install_wine_python(wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
                         username: str = configmagick_linux.get_current_username(),
                         python_version: str = 'latest',
@@ -88,7 +96,7 @@ def install_wine_python(wine_prefix: Union[str, pathlib.Path] = configmagick_lin
                 path_python_filename=path_python_filename,
                 display=configmagick_linux.get_env_display())
 
-    lib_shell.run_shell_command(command, shell=True, run_as_user=username, pass_stdout_stderr_to_sys=False, quiet=quiet)
+    lib_shell.run_shell_command(command, shell=True, run_as_user=username, pass_stdout_stderr_to_sys=True, quiet=quiet)
     lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)   # it is cheap, just in case
 
     command = 'WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" wine python --version'.format(wine_prefix=wine_prefix, wine_arch=wine_arch)

@@ -50,6 +50,7 @@ def install_wine_gecko(wine_prefix: Union[str, pathlib.Path] = configmagick_linu
         install_gecko_64(wine_prefix=wine_prefix, username=username, quiet=quiet)
 
     lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)  # it is cheap, just in case
+    lib_log_utils.banner_success('Wine Gecko installed')
 
 
 def install_gecko_32(wine_prefix: Union[str, pathlib.Path], username: str, quiet: bool = False) -> None:

@@ -52,6 +52,7 @@ def install_wine_machine(wine_prefix: Union[str, pathlib.Path] = configmagick_li
     delete_existing_wine_machine_or_raise(overwrite_existing_wine_machine=overwrite_existing_wine_machine,
                                           wine_prefix=wine_prefix, username=username)
     create_wine_machine(wine_prefix=wine_prefix, username=username, wine_arch=wine_arch, quiet=quiet)
+    lib_log_utils.banner_success('Wine Machine creation OK')
 
 
 def disable_gui_crash_dialogs(wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
@@ -71,6 +72,7 @@ def disable_gui_crash_dialogs(wine_prefix: Union[str, pathlib.Path] = configmagi
                                 .format(wine_prefix=wine_prefix, wine_arch=wine_arch),
                                 run_as_user=username, shell=True, pass_stdout_stderr_to_sys=True, quiet=quiet)
     lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)  # it is cheap, just in case
+    lib_log_utils.banner_success('GUI Crash Dialogs disabled')
 
 
 def set_windows_version(wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
@@ -96,6 +98,7 @@ def set_windows_version(wine_prefix: Union[str, pathlib.Path] = configmagick_lin
                                 .format(wine_prefix=wine_prefix, wine_arch=wine_arch, windows_version=windows_version),
                                 run_as_user=username, shell=True, pass_stdout_stderr_to_sys=True, quiet=quiet)
     lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)  # it is cheap, just in case
+    lib_log_utils.banner_success('Windows version Set to "{windows_version}"'.format(windows_version=windows_version))
 
 
 def create_wine_machine(wine_prefix: pathlib.Path,

@@ -63,6 +63,7 @@ def install_wine_mono_latest(wine_prefix: Union[str, pathlib.Path] = configmagic
                 mono_msi_filename=mono_msi_filename)
     lib_shell.run_shell_command(command, shell=True, run_as_user=username, pass_stdout_stderr_to_sys=True, quiet=quiet)
     lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)  # it is cheap, just in case
+    lib_log_utils.banner_success('Wine Mono "{mono_msi_filename}" installed'.format(mono_msi_filename=mono_msi_filename))
 
 
 def install_wine_mono_recommended(wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',

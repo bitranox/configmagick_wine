@@ -17,6 +17,11 @@ except ImportError:                     # type: ignore # pragma: no cover
 
 def travis_workaround() -> None:
     """
+    >>> if 'WINEPREFIX' in os.environ:
+    ...     wine_prefix = os.environ['WINEPREFIX']
+    ... else:
+    ...     wine_prefix = ''
+
     >>> lib_log_utils.banner_notice('install_wine_python_travis, WINEPREFIX="{wine_prefix}", on_travis="{is_on_travis}"'\
                     .format(wine_prefix=wine_prefix, is_on_travis=configmagick_linux.is_on_travis() ))
 

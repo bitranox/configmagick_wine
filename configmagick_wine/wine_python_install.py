@@ -80,7 +80,7 @@ def install_wine_python(wine_prefix: Union[str, pathlib.Path] = configmagick_lin
                               .format(path_python_filename=path_python_filename, wine_prefix=wine_prefix), quiet=quiet)
 
     command = 'DISPLAY="{display}" WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" '\
-              'wine "{wine_cache_directory}/{path_python_filename}" '\
+              'wineconsole "{wine_cache_directory}/{path_python_filename}" '\
               '/quiet InstallAllUsers=1 PrependPath=1 Include_test=0'\
         .format(wine_prefix=wine_prefix,
                 wine_arch=wine_arch,

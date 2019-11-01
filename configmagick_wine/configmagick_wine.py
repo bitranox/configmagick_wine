@@ -74,6 +74,7 @@ def main() -> None:
                 'install_wine_gecko': wine_gecko_install.install_wine_gecko,
                 'install_wine_git': wine_git_install.install_wine_git,
                 'install_wine_python': wine_python_install.install_wine_python,
+                'install_wine_python_webinstall': wine_python_install.install_wine_python_webinstall,
                 'install_wine_python_travis': wine_python_install_travis.install_wine_python_travis,
                 'fix_wine_permissions': lib_wine.fix_wine_permissions,
             })

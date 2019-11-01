@@ -68,9 +68,10 @@ def install_wine_git(wine_prefix: Union[str, pathlib.Path] = configmagick_linux.
     lib_shell.run_shell_command(command, shell=True, run_as_user=username, pass_stdout_stderr_to_sys=True, quiet=quiet)
     lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)   # it is cheap, just in case
     lib_wine.prepend_path_to_wine_registry_path(path_to_add='C:\\Program Files\\PortableGit', wine_prefix=wine_prefix, username=username)
-    command = 'WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" wineconsole git --version'.format(wine_prefix=wine_prefix, wine_arch=wine_arch)
+    command = 'WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" wine git --version'.format(wine_prefix=wine_prefix, wine_arch=wine_arch)
     try:
-        lib_shell.run_shell_command(command, run_as_user=username, quiet=True, shell=True)
+        version = lib_shell.run_shell_command(command, run_as_user=username, quiet=True, shell=True).stdout
+        lib_log_utils.banner_success('Git Version "{version}" installed'.format(version=version))
     except subprocess.CalledProcessError:
         raise RuntimeError('can not install git portable on WINEPREFIX="{wine_prefix}"'.format(wine_prefix=wine_prefix))
 

@@ -3,6 +3,7 @@ import os
 
 # OWN
 import configmagick_linux
+import lib_log_utils
 
 # ####### PROJ
 try:
@@ -18,7 +19,10 @@ def travis_workaround() -> None:
     """
     >>> if 'WINEPREFIX' in os.environ and configmagick_linux.is_on_travis():
     ...     wine_prefix = os.environ['WINEPREFIX']
+    ...     lib_log_utils.banner_notice('install_wine_python_travis, WINEPREFIX="{wine_prefix}"'.format(wine_prefix=wine_prefix))
     ...     wine_python_install.install_wine_python(wine_prefix=wine_prefix, quiet=False)
+    ...     lib_log_utils.banner_notice('after install_wine_python_travis')
+
 
     """
     pass

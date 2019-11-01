@@ -71,8 +71,8 @@ def install_wine_git(wine_prefix: Union[str, pathlib.Path] = configmagick_linux.
     # we need to use wineconsole here
     command = 'WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" wineconsole git --version'.format(wine_prefix=wine_prefix, wine_arch=wine_arch)
     try:
-        version = lib_shell.run_shell_command(command, run_as_user=username, quiet=True, shell=True).stdout
-        lib_log_utils.banner_success('Git Version "{version}" installed'.format(version=version))
+        lib_shell.run_shell_command(command, run_as_user=username, quiet=True, shell=True)
+        lib_log_utils.banner_success('Git installed')
     except subprocess.CalledProcessError:
         raise RuntimeError('can not install git portable on WINEPREFIX="{wine_prefix}"'.format(wine_prefix=wine_prefix))
 

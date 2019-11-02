@@ -34,7 +34,6 @@ try:
     from . import wine_machine_install        # type: ignore # pragma: no cover
     from . import wine_mono_install           # type: ignore # pragma: no cover
     from . import wine_python_install         # type: ignore # pragma: no cover
-    from . import wine_python_install_travis  # type: ignore # pragma: no cover
 except ImportError:                           # type: ignore # pragma: no cover
     # imports for doctest
     # noinspection PyUnresolvedReferences
@@ -51,8 +50,6 @@ except ImportError:                           # type: ignore # pragma: no cover
     import wine_mono_install                  # type: ignore # pragma: no cover
     # noinspection PyUnresolvedReferences
     import wine_python_install                # type: ignore # pragma: no cover
-    # noinspection PyUnresolvedReferences
-    import wine_python_install_travis         # type: ignore # pragma: no cover
 
 
 def main() -> None:
@@ -75,7 +72,6 @@ def main() -> None:
                 'install_wine_git': wine_git_install.install_wine_git,
                 'install_wine_python': wine_python_install.install_wine_python,
                 'install_wine_python_webinstall': wine_python_install.install_wine_python_webinstall,
-                'install_wine_python_travis': wine_python_install_travis.install_wine_python_travis,
                 'fix_wine_permissions': lib_wine.fix_wine_permissions,
             })
 

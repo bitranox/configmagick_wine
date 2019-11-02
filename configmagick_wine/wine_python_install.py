@@ -37,7 +37,7 @@ def install_wine_python(wine_prefix: Union[str, pathlib.Path] = configmagick_lin
                         python_version: str = 'latest',
                         quiet: bool = True) -> None:
 
-    """ install python on wine, using the normal installer
+    """ install python on wine, using the normal installer - unfortunately this does not work on travis
 
     Parameter:
         python_version : 'latest' or valid Version number, like '3.8.0'
@@ -112,7 +112,7 @@ def install_wine_python_webinstall(wine_prefix: Union[str, pathlib.Path] = confi
                                    python_version: str = 'latest',
                                    quiet: bool = True) -> None:
 
-    """ install python on wine, using the web installer
+    """ install python on wine, using the web installer - unfortunately this does not work on travis
 
     Parameter:
         python_version : 'latest' or valid Version number, like '3.8.0'
@@ -180,14 +180,6 @@ def install_wine_python_webinstall(wine_prefix: Union[str, pathlib.Path] = confi
         assert result.stdout.startswith('Python')
     except (subprocess.CalledProcessError, AssertionError):
         raise RuntimeError('can not install Python on WINEPREFIX="{wine_prefix}"'.format(wine_prefix=wine_prefix))
-
-
-def is_xvfb_service_active() -> bool:
-    if configmagick_linux.is_service_installed('xvfb'):
-        is_running_service = configmagick_linux.is_service_active('xvfb')
-    else:
-        is_running_service = False
-    return bool(is_running_service)
 
 
 def get_latest_python_version() -> str:
@@ -402,15 +394,13 @@ def download_python_exe_file(python_version: str, wine_prefix: Union[str, pathli
     if lib_wine.is_file_in_wine_cache(filename=path_python_filename, username=username) or force_download:
         if force_download:
             lib_wine.remove_file_from_winecache(filename=path_python_filename, username=username)
-            try:
-                lib_wine.download_file_to_winecache(download_link=python_download_link, filename=path_python_filename, username=username)
-            except subprocess.CalledProcessError:
-                lib_wine.download_file_to_winecache(download_link=python_backup_download_link, filename=path_python_filename, username=username)
-    else:
-        try:
-            lib_wine.download_file_to_winecache(download_link=python_download_link, filename=path_python_filename, username=username)
-        except subprocess.CalledProcessError:
-            lib_wine.download_file_to_winecache(download_link=python_backup_download_link, filename=path_python_filename, username=username)
+        else:
+            return
+
+    try:
+        lib_wine.download_file_to_winecache(download_link=python_download_link, filename=path_python_filename, username=username)
+    except subprocess.CalledProcessError:
+        lib_wine.download_file_to_winecache(download_link=python_backup_download_link, filename=path_python_filename, username=username)
 
 
 def download_python_webinstall_file(python_version: str, wine_prefix: Union[str, pathlib.Path],
@@ -453,12 +443,10 @@ def download_python_webinstall_file(python_version: str, wine_prefix: Union[str,
     if lib_wine.is_file_in_wine_cache(filename=path_python_filename, username=username) or force_download:
         if force_download:
             lib_wine.remove_file_from_winecache(filename=path_python_filename, username=username)
-            try:
-                lib_wine.download_file_to_winecache(download_link=python_download_link, filename=path_python_filename, username=username)
-            except subprocess.CalledProcessError:
-                lib_wine.download_file_to_winecache(download_link=python_backup_download_link, filename=path_python_filename, username=username)
-    else:
-        try:
-            lib_wine.download_file_to_winecache(download_link=python_download_link, filename=path_python_filename, username=username)
-        except subprocess.CalledProcessError:
-            lib_wine.download_file_to_winecache(download_link=python_backup_download_link, filename=path_python_filename, username=username)
+        else:
+            return
+
+    try:
+        lib_wine.download_file_to_winecache(download_link=python_download_link, filename=path_python_filename, username=username)
+    except subprocess.CalledProcessError:
+        lib_wine.download_file_to_winecache(download_link=python_backup_download_link, filename=path_python_filename, username=username)

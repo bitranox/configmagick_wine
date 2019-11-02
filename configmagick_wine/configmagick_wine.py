@@ -34,6 +34,7 @@ try:
     from . import wine_machine_install        # type: ignore # pragma: no cover
     from . import wine_mono_install           # type: ignore # pragma: no cover
     from . import wine_python_install         # type: ignore # pragma: no cover
+    from . import wine_python_install_nuget   # type: ignore # pragma: no cover
 except ImportError:                           # type: ignore # pragma: no cover
     # imports for doctest
     # noinspection PyUnresolvedReferences
@@ -50,6 +51,8 @@ except ImportError:                           # type: ignore # pragma: no cover
     import wine_mono_install                  # type: ignore # pragma: no cover
     # noinspection PyUnresolvedReferences
     import wine_python_install                # type: ignore # pragma: no cover
+    # noinspection PyUnresolvedReferences
+    import wine_python_install_nuget          # type: ignore # pragma: no cover
 
 
 def main() -> None:
@@ -71,6 +74,7 @@ def main() -> None:
                 'install_wine_gecko': wine_gecko_install.install_wine_gecko,
                 'install_wine_git': wine_git_install.install_wine_git,
                 'install_wine_python': wine_python_install.install_wine_python,
+                'install_wine_python_nuget': wine_python_install_nuget.install_wine_python_nuget,
                 'install_wine_python_webinstall': wine_python_install.install_wine_python_webinstall,
                 'fix_wine_permissions': lib_wine.fix_wine_permissions,
             })

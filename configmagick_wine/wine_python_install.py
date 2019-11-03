@@ -35,7 +35,7 @@ class NullWriter(object):               # type: ignore # pragma: no cover
 def install_wine_python(wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
                         username: str = configmagick_linux.get_current_username(),
                         python_version: str = 'latest',
-                        quiet: bool = True) -> None:
+                        quiet: bool = False) -> None:
 
     """ install python on wine, using the normal installer - unfortunately this does not work on travis
 

@@ -36,14 +36,14 @@ def install_wine_python_nuget(wine_prefix: Union[str, pathlib.Path] = configmagi
                               username: str = configmagick_linux.get_current_username(),
                               quiet: bool = False) -> None:
 
-    """ install python on wine, using the normal installer - unfortunately this does not work on travis
-
-    Parameter:
-        python_version : 'latest' or valid Version number, like '3.8.0'
+    """ install python on wine, using the nuget installer
+        wine stable 4.0.2 : not working
+        wine devel  4.19  : working
+        wine staging 4.19 : working
 
     >>> wine_machine_install.create_wine_test_prefixes()
-    >>> install_wine_python_nuget(wine_prefix='wine_test_32', quiet=False)
-    >>> install_wine_python_nuget(wine_prefix='wine_test_64', quiet=False)
+    >>> install_wine_python_nuget(wine_prefix='wine_test_32', quiet=True)
+    >>> install_wine_python_nuget(wine_prefix='wine_test_64', quiet=True)
 
     >>> # test python 32 Bit installed
     >>> wine_prefix = lib_wine.get_and_check_wine_prefix(wine_prefix='wine_test_32')
@@ -87,7 +87,7 @@ def install_wine_python_nuget(wine_prefix: Union[str, pathlib.Path] = configmagi
     lib_log_utils.log_verbose('Install Python on WINEPREFIX="{wine_prefix}"'.format(wine_prefix=wine_prefix), quiet=quiet)
 
     command = 'DISPLAY="{display}" WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" '\
-              'wine "{wine_cache_directory}/{path_nuget_filename}" '\
+              'wineconsole "{wine_cache_directory}/{path_nuget_filename}" '\
               'install {python_version} -ExcludeVersion -OutputDirectory "C:\\Program Files"'\
         .format(display=configmagick_linux.get_env_display(),
                 wine_prefix=wine_prefix,

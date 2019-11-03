@@ -75,7 +75,6 @@ def main() -> None:
                 'install_wine_git': wine_git_install.install_wine_git,
                 'install_wine_python': wine_python_install.install_wine_python,
                 'install_wine_python_nuget': wine_python_install_nuget.install_wine_python_nuget,
-                'install_wine_python_webinstall': wine_python_install.install_wine_python_webinstall,
                 'fix_wine_permissions': lib_wine.fix_wine_permissions,
             })
 

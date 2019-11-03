@@ -3,8 +3,6 @@ import pathlib
 
 # PROJ
 from .configmagick_wine import *
-# from .install_wine import *
-# from .install_wine_machine import *
 
 
 def get_version() -> str:

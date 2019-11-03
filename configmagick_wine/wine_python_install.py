@@ -96,7 +96,7 @@ def install_wine_python(wine_prefix: Union[str, pathlib.Path] = configmagick_lin
                 path_python_filename=path_python_filename,
                 display=configmagick_linux.get_env_display())
 
-    lib_shell.run_shell_command(command, shell=True, run_as_user=username, pass_stdout_stderr_to_sys=False, quiet=quiet, start_new_session=True)
+    lib_shell.run_shell_command(command, shell=True, run_as_user=username, pass_stdout_stderr_to_sys=True, quiet=quiet)
     lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)
 
     command = 'WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" wine python --version'.format(wine_prefix=wine_prefix, wine_arch=wine_arch)
@@ -171,7 +171,7 @@ def install_wine_python_webinstall(wine_prefix: Union[str, pathlib.Path] = confi
                 path_python_filename=path_python_filename,
                 display=configmagick_linux.get_env_display())
 
-    lib_shell.run_shell_command(command, shell=True, run_as_user=username, pass_stdout_stderr_to_sys=False, quiet=quiet, start_new_session=True)
+    lib_shell.run_shell_command(command, shell=True, run_as_user=username, pass_stdout_stderr_to_sys=True, quiet=quiet)
     lib_wine.fix_wine_permissions(wine_prefix=wine_prefix, username=username)
 
     command = 'WINEPREFIX="{wine_prefix}" WINEARCH="{wine_arch}" wine python --version'.format(wine_prefix=wine_prefix, wine_arch=wine_arch)

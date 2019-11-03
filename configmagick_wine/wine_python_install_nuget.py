@@ -105,6 +105,7 @@ def install_wine_python_nuget(wine_prefix: Union[str, pathlib.Path] = configmagi
     try:
         result = lib_shell.run_shell_command(command, run_as_user=username, quiet=True, shell=True)
         assert result.stdout.startswith('Python')
+        lib_log_utils.banner_success('{python_version} installed OK'.format(python_version=result.stdout))
     except (subprocess.CalledProcessError, AssertionError):
         raise RuntimeError('can not install Python on WINEPREFIX="{wine_prefix}"'.format(wine_prefix=wine_prefix))
 

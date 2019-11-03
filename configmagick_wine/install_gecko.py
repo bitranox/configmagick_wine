@@ -13,27 +13,27 @@ import lib_shell
 try:
     # imports for local pytest
     from . import lib_wine             # type: ignore # pragma: no cover
-    from . import wine_install
-    from . import wine_machine_install
+    from . import install_wine
+    from . import install_wine_machine
 except ImportError:                    # type: ignore # pragma: no cover
     # imports for doctest
     # noinspection PyUnresolvedReferences
     import lib_wine                    # type: ignore # pragma: no cover
     # noinspection PyUnresolvedReferences
-    import wine_install                # type: ignore # pragma: no cover
+    import install_wine                # type: ignore # pragma: no cover
     # noinspection PyUnresolvedReferences
-    import wine_machine_install        # type: ignore # pragma: no cover
+    import install_wine_machine        # type: ignore # pragma: no cover
 
 
-def install_wine_gecko(wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
-                       username: str = configmagick_linux.get_current_username(),
-                       quiet: bool = False) -> None:
+def install_gecko(wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
+                  username: str = configmagick_linux.get_current_username(),
+                  quiet: bool = False) -> None:
     """
     install 32 Bit Gecko for 32/64 Bit Wine, and 64 Bit Gecko for 64 Bit Wine
 
-    >>> wine_machine_install.create_wine_test_prefixes()
-    >>> install_wine_gecko(wine_prefix='wine_test_32', quiet=True)
-    >>> install_wine_gecko(wine_prefix='wine_test_64', quiet=True)
+    >>> install_wine_machine.create_wine_test_prefixes()
+    >>> install_gecko(wine_prefix='wine_test_32', quiet=True)
+    >>> install_gecko(wine_prefix='wine_test_64', quiet=True)
 
     """
     lib_log_utils.banner_verbose('Install Gecko on WINEPREFIX="{wine_prefix}"'.format(wine_prefix=wine_prefix), quiet=quiet)
@@ -165,7 +165,7 @@ def get_gecko_32_filename_from_appwiz(wine_prefix: Union[str, pathlib.Path],
     """ Gecko Filename can only be extracted from wine prefixes created with wine version 4.18 upwards,
     on older version this does not work and we assume gecko-2.47
 
-    >>> wine_machine_install.create_wine_test_prefixes()
+    >>> install_wine_machine.create_wine_test_prefixes()
 
     >>> username = configmagick_linux.get_current_username()
     >>> wine_prefix = lib_wine.get_and_check_wine_prefix(wine_prefix='wine_test_32')
@@ -205,7 +205,7 @@ def get_gecko_64_filename_from_appwiz(wine_prefix: Union[str, pathlib.Path],
 
 
     >>> import unittest
-    >>> wine_machine_install.create_wine_test_prefixes()
+    >>> install_wine_machine.create_wine_test_prefixes()
     >>> wine_prefix = lib_wine.get_and_check_wine_prefix('wine_test_32')
     >>> unittest.TestCase().assertRaises(RuntimeError, get_gecko_64_filename_from_appwiz, wine_prefix)
 

@@ -12,16 +12,16 @@ import lib_shell
 try:
     # imports for local pytest
     from . import lib_wine              # type: ignore # pragma: no cover
-    from . import wine_install          # type: ignore # pragma: no cover
-    from . import wine_machine_install  # type: ignore # pragma: no cover
+    from . import install_wine          # type: ignore # pragma: no cover
+    from . import install_wine_machine  # type: ignore # pragma: no cover
 except ImportError:                     # type: ignore # pragma: no cover
     # imports for doctest
     # noinspection PyUnresolvedReferences
     import lib_wine                     # type: ignore # pragma: no cover
     # noinspection PyUnresolvedReferences
-    import wine_install                 # type: ignore # pragma: no cover
+    import install_wine                 # type: ignore # pragma: no cover
     # noinspection PyUnresolvedReferences
-    import wine_machine_install                 # type: ignore # pragma: no cover
+    import install_wine_machine                 # type: ignore # pragma: no cover
 
 
 class NullWriter(object):               # type: ignore # pragma: no cover
@@ -32,19 +32,19 @@ class NullWriter(object):               # type: ignore # pragma: no cover
         pass                            # type: ignore # pragma: no cover
 
 
-def install_wine_python(wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
-                        username: str = configmagick_linux.get_current_username(),
-                        python_version: str = 'latest',
-                        quiet: bool = False) -> None:
+def install_python(wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
+                   username: str = configmagick_linux.get_current_username(),
+                   python_version: str = 'latest',
+                   quiet: bool = False) -> None:
 
     """ install python on wine, using the normal installer - unfortunately this does not work on travis
 
     Parameter:
         python_version : 'latest' or valid Version number, like '3.8.0'
 
-    >>> wine_machine_install.create_wine_test_prefixes()
-    >>> install_wine_python(wine_prefix='wine_test_32', quiet=True)
-    >>> install_wine_python(wine_prefix='wine_test_64', quiet=True)
+    >>> install_wine_machine.create_wine_test_prefixes()
+    >>> install_python(wine_prefix='wine_test_32', quiet=True)
+    >>> install_python(wine_prefix='wine_test_64', quiet=True)
 
     >>> # test python 32 Bit installed
     >>> wine_prefix = lib_wine.get_and_check_wine_prefix(wine_prefix='wine_test_32')
@@ -212,7 +212,7 @@ def download_python_exe_file(python_version: str, wine_prefix: Union[str, pathli
                              username: str = configmagick_linux.get_current_username(), force_download: bool = False) -> None:
     """ Downloads the Python Exe File to the WineCache directory
 
-    >>> wine_machine_install.create_wine_test_prefixes()
+    >>> install_wine_machine.create_wine_test_prefixes()
     >>> wine_prefix = configmagick_linux.get_path_home_dir_current_user() / 'wine_test_32'
     >>> wine_arch = lib_wine.get_wine_arch_from_wine_prefix(wine_prefix=wine_prefix)
     >>> username = configmagick_linux.get_current_username()

@@ -12,11 +12,11 @@ import lib_shell
 # ####### PROJ
 try:
     # imports for local pytest
-    from . import wine_machine_install  # type: ignore # pragma: no cover
+    from . import install_wine_machine  # type: ignore # pragma: no cover
 except ImportError:                     # type: ignore # pragma: no cover
     # imports for doctest
     # noinspection PyUnresolvedReferences
-    import wine_machine_install                 # type: ignore # pragma: no cover
+    import install_wine_machine                 # type: ignore # pragma: no cover
 
 
 def fix_wine_permissions(wine_prefix: Union[str, pathlib.Path], username: str) -> None:
@@ -218,7 +218,7 @@ def prepend_path_to_wine_registry_path(path_to_add: Union[str, pathlib.WindowsPa
                                        wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
                                        username: str = configmagick_linux.get_current_username()) -> None:
     """
-    >>> wine_machine_install.create_wine_test_prefixes()
+    >>> install_wine_machine.create_wine_test_prefixes()
     >>> old_path = get_wine_registry_path(wine_prefix='wine_test_32')
     >>> prepend_path_to_wine_registry_path(path_to_add='c:\\\\test',wine_prefix='wine_test_32')
     >>> assert get_wine_registry_path(wine_prefix='wine_test_32').startswith('c:\\\\test;')
@@ -244,7 +244,7 @@ def prepend_path_to_wine_registry_path(path_to_add: Union[str, pathlib.WindowsPa
 def get_wine_registry_path(wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
                            username: str = configmagick_linux.get_current_username()) -> str:
     """
-    >>> wine_machine_install.create_wine_test_prefixes()
+    >>> install_wine_machine.create_wine_test_prefixes()
     >>> result = get_wine_registry_path(wine_prefix='wine_test_32')
     >>> assert 'c:\\windows' in result.lower()
     >>> result = get_wine_registry_path(wine_prefix='wine_test_64')
@@ -263,7 +263,7 @@ def write_wine_registry_path(path: str,
                              wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
                              username: str = configmagick_linux.get_current_username()) -> None:
     """
-    >>> wine_machine_install.create_wine_test_prefixes()
+    >>> install_wine_machine.create_wine_test_prefixes()
     >>> old_path = get_wine_registry_path(wine_prefix='wine_test_32')
     >>> write_wine_registry_path(path='c:\\\\test', wine_prefix='wine_test_32')
     >>> assert get_wine_registry_path(wine_prefix='wine_test_32') == 'c:\\\\test'
@@ -289,7 +289,7 @@ def get_wine_registry_data(reg_key: str,
                            wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
                            username: str = configmagick_linux.get_current_username()) -> str:
     """
-    >>> wine_machine_install.create_wine_test_prefixes()
+    >>> install_wine_machine.create_wine_test_prefixes()
     >>> result = get_wine_registry_data(reg_key='HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment',\
                                         reg_subkey='PATH', wine_prefix='wine_test_32')
     >>> assert 'c:\\windows' in result.lower()
@@ -318,7 +318,7 @@ def get_wine_registry_data_type(reg_key: str,
                                 wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
                                 username: str = configmagick_linux.get_current_username()) -> str:
     """
-    >>> wine_machine_install.create_wine_test_prefixes()
+    >>> install_wine_machine.create_wine_test_prefixes()
     >>> result = get_wine_registry_data_type(reg_key='HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment',\
                                              reg_subkey='PATH', wine_prefix='wine_test_32')
     >>> assert result == 'REG_EXPAND_SZ'
@@ -348,7 +348,7 @@ def get_l_wine_registry_data_struct(reg_key: str,
                                     username: str = configmagick_linux.get_current_username()) -> Tuple[str, str]:
     """
     :returns [data_type, data]
-    >>> wine_machine_install.create_wine_test_prefixes()
+    >>> install_wine_machine.create_wine_test_prefixes()
     >>> result = get_l_wine_registry_data_struct(reg_key='HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment',\
                                                  reg_subkey='PATH', wine_prefix='wine_test_32')
     >>> assert result[0] == 'REG_EXPAND_SZ'

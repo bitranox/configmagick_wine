@@ -12,13 +12,13 @@ import lib_shell
 try:
     # imports for local pytest
     from . import lib_wine             # type: ignore # pragma: no cover
-    from . import wine_install         # type: ignore # pragma: no cover
+    from . import install_wine         # type: ignore # pragma: no cover
 except ImportError:                    # type: ignore # pragma: no cover
     # imports for doctest
     # noinspection PyUnresolvedReferences
     import lib_wine                    # type: ignore # pragma: no cover
     # noinspection PyUnresolvedReferences
-    import wine_install                # type: ignore # pragma: no cover
+    import install_wine                # type: ignore # pragma: no cover
 
 
 def install_wine_machine(wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
@@ -142,10 +142,10 @@ def create_wine_test_prefixes() -> None:
 
     """
 
-    if not wine_install.is_wine_installed():
-        wine_install.install_wine(wine_release='staging', quiet=True)
-        wine_install.install_winetricks(quiet=True)
-        wine_install.update_winetricks(quiet=True)
+    if not install_wine.is_wine_installed():
+        install_wine.install_wine(wine_release='staging', quiet=True)
+        install_wine.install_winetricks(quiet=True)
+        install_wine.update_winetricks(quiet=True)
 
     wine_prefix = lib_wine.get_and_check_wine_prefix(wine_prefix='wine_test_32', username=configmagick_linux.get_current_username())
     if not wine_prefix.exists():

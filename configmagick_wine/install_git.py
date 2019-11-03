@@ -12,27 +12,27 @@ import lib_shell
 try:
     # imports for local pytest
     from . import lib_wine              # type: ignore # pragma: no cover
-    from . import wine_install          # type: ignore # pragma: no cover
-    from . import wine_machine_install  # type: ignore # pragma: no cover
+    from . import install_wine          # type: ignore # pragma: no cover
+    from . import install_wine_machine  # type: ignore # pragma: no cover
 except ImportError:                     # type: ignore # pragma: no cover
     # imports for doctest
     # noinspection PyUnresolvedReferences
     import lib_wine                     # type: ignore # pragma: no cover
     # noinspection PyUnresolvedReferences
-    import wine_install                 # type: ignore # pragma: no cover
+    import install_wine                 # type: ignore # pragma: no cover
     # noinspection PyUnresolvedReferences
-    import wine_machine_install                 # type: ignore # pragma: no cover
+    import install_wine_machine                 # type: ignore # pragma: no cover
 
 
-def install_wine_git(wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
-                     username: str = configmagick_linux.get_current_username(),
-                     quiet: bool = False) -> None:
+def install_git(wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
+                username: str = configmagick_linux.get_current_username(),
+                quiet: bool = False) -> None:
 
     """ install git on wine
 
-    >>> wine_machine_install.create_wine_test_prefixes()
-    >>> install_wine_git(wine_prefix='wine_test_32', quiet=True)
-    >>> install_wine_git(wine_prefix='wine_test_64', quiet=True)
+    >>> install_wine_machine.create_wine_test_prefixes()
+    >>> install_git(wine_prefix='wine_test_32', quiet=True)
+    >>> install_git(wine_prefix='wine_test_64', quiet=True)
 
     """
     configmagick_linux.full_update_and_upgrade(quiet=quiet)
@@ -83,7 +83,7 @@ def download_latest_git_files_from_github_to_winecache(wine_prefix: Union[str, p
                                                        quiet: bool = False) -> None:
 
     """
-    >>> wine_machine_install.create_wine_test_prefixes()
+    >>> install_wine_machine.create_wine_test_prefixes()
     >>> download_latest_git_files_from_github_to_winecache(wine_prefix = 'wine_test_32', force_download=True, quiet=False)
     >>> download_latest_git_files_from_github_to_winecache(wine_prefix = 'wine_test_64', force_download=False, quiet=False)
     """

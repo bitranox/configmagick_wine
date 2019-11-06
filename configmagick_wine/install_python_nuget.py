@@ -24,14 +24,6 @@ except ImportError:                     # type: ignore # pragma: no cover
     import install_wine_machine                 # type: ignore # pragma: no cover
 
 
-class NullWriter(object):               # type: ignore # pragma: no cover
-    def write(self, s):                 # type: ignore # pragma: no cover
-        pass                            # type: ignore # pragma: no cover
-
-    def flush(self):                    # type: ignore # pragma: no cover
-        pass                            # type: ignore # pragma: no cover
-
-
 def install_python_nuget(wine_prefix: Union[str, pathlib.Path] = configmagick_linux.get_path_home_dir_current_user() / '.wine',
                          username: str = configmagick_linux.get_current_username(),
                          quiet: bool = False) -> None:

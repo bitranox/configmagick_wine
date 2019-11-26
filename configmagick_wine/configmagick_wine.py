@@ -24,7 +24,6 @@ except Exception:
 import lib_log_utils
 
 # ####### PROJ
-
 try:
     # imports for local pytest
     from . import lib_wine                    # type: ignore # pragma: no cover

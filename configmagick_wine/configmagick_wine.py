@@ -57,7 +57,7 @@ except ImportError:                           # type: ignore # pragma: no cover
 def main() -> None:
     # noinspection PyBroadException
     try:
-        lib_log_utils.BannerSettings.called_via_commandline = True
+        lib_log_utils.LogSettings.add_streamhandler_color = True
         # we must not call fire if the program is called via pytest
         is_called_via_pytest = [(sys_arg != '') for sys_arg in sys.argv if 'pytest' in sys_arg]
         if not is_called_via_pytest:
@@ -80,27 +80,27 @@ def main() -> None:
     except FileNotFoundError:
         # see https://www.thegeekstuff.com/2010/10/linux-error-codes for error codes
         # No such file or directory
-        lib_log_utils.log_exception_traceback(s_error='Unexpected Exception')       # pragma: no cover
+        lib_log_utils.log_traceback.log_exception_traceback(s_error='Unexpected Exception')       # pragma: no cover
         sys.exit(errno.ENOENT)                                                      # pragma: no cover
     except FileExistsError:
         # File exists
-        lib_log_utils.log_exception_traceback(s_error='Unexpected Exception')       # pragma: no cover
+        lib_log_utils.log_traceback.log_exception_traceback(s_error='Unexpected Exception')       # pragma: no cover
         sys.exit(errno.EEXIST)                                                      # pragma: no cover
     except TypeError:
         # Invalid Argument
-        lib_log_utils.log_exception_traceback(s_error='Unexpected Exception')       # pragma: no cover
+        lib_log_utils.log_traceback.log_exception_traceback(s_error='Unexpected Exception')       # pragma: no cover
         sys.exit(errno.EINVAL)                                                      # pragma: no cover
     except ValueError:
         # Invalid Argument
-        lib_log_utils.log_exception_traceback(s_error='Unexpected Exception')       # pragma: no cover
+        lib_log_utils.log_traceback.log_exception_traceback(s_error='Unexpected Exception')       # pragma: no cover
         sys.exit(errno.EINVAL)                                                      # pragma: no cover
     except RuntimeError:
         # Operation not permitted
-        lib_log_utils.log_exception_traceback(s_error='Unexpected Exception')       # pragma: no cover
+        lib_log_utils.log_traceback.log_exception_traceback(s_error='Unexpected Exception')       # pragma: no cover
         sys.exit(errno.EPERM)                                                       # pragma: no cover
     except Exception:
         # Operation not permitted
-        lib_log_utils.log_exception_traceback(s_error='Unexpected Exception')       # pragma: no cover
+        lib_log_utils.log_traceback.log_exception_traceback(s_error='Unexpected Exception')       # pragma: no cover
         sys.exit(errno.EPERM)                                                       # pragma: no cover
 
 
